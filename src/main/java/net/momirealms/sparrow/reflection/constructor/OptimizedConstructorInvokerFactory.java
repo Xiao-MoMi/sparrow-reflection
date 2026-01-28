@@ -13,9 +13,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 @SuppressWarnings("DuplicatedCode")
 final class OptimizedConstructorInvokerFactory implements Opcodes {
-    
+
     private static final AtomicInteger ID = new AtomicInteger(0);
-    private static final Class<?>[] INTERFACES = new Class<?>[] {
+    private static final Class<?>[] INTERFACES = new Class<?>[]{
             SConstructor0.class, SConstructor1.class, SConstructor2.class, SConstructor3.class,
             SConstructor4.class, SConstructor5.class, SConstructor6.class, SConstructor7.class,
             SConstructor8.class, SConstructor9.class, SConstructor10.class
@@ -30,12 +30,12 @@ final class OptimizedConstructorInvokerFactory implements Opcodes {
         Class<?> targetInterface = INTERFACES[parameterTypes.length];
         String suffix = targetInterface.getSimpleName().replace("SConstructor", "");
         String internalClassName = Type.getInternalName(owner) + "$" + SReflection.PREFIX + "ConstructorInvoker" + suffix + "_" + ID.getAndIncrement();
-        
+
         byte[] bytes = generateByteCode(
-                internalClassName, 
-                owner, 
-                constructorDescriptor, 
-                parameterTypes, 
+                internalClassName,
+                owner,
+                constructorDescriptor,
+                parameterTypes,
                 targetInterface
         );
 
@@ -45,12 +45,12 @@ final class OptimizedConstructorInvokerFactory implements Opcodes {
     }
 
     private static byte[] generateByteCode(
-            String className, 
-            Class<?> owner, 
-            String desc, 
-            Class<?>[] params, 
+            String className,
+            Class<?> owner,
+            String desc,
+            Class<?>[] params,
             Class<?> interfaceClass) {
-        
+
         ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
         cw.visit(V17, ACC_PUBLIC | ACC_FINAL, className, null, "java/lang/Object", new String[]{Type.getInternalName(interfaceClass)});
 

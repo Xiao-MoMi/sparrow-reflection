@@ -23,10 +23,6 @@ public final class SparrowClass<T> {
         this.clazz = clazz;
     }
 
-    public Class<T> clazz() {
-        return this.clazz;
-    }
-
     public static <T> SparrowClass<T> of(@NotNull Class<T> clazz) {
         Objects.requireNonNull(clazz, "class cannot be null");
         return new SparrowClass<>(clazz);
@@ -35,6 +31,10 @@ public final class SparrowClass<T> {
     @Nullable
     public static <T> SparrowClass<T> ofNullable(@Nullable Class<T> clazz) {
         return clazz == null ? null : new SparrowClass<>(clazz);
+    }
+
+    public Class<T> clazz() {
+        return this.clazz;
     }
 
     public boolean isInstance(@NotNull Object object) {

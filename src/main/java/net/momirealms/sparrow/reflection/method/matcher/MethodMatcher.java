@@ -4,8 +4,6 @@ import java.lang.reflect.Method;
 
 public interface MethodMatcher {
 
-    boolean matches(final Method method);
-
     static MethodMatcher anyOf(final MethodMatcher... matchers) {
         return new AnyOfMatcher(matchers);
     }
@@ -65,6 +63,8 @@ public interface MethodMatcher {
     static MethodMatcher finalMethod() {
         return FinalMatcher.INSTANCE;
     }
+
+    boolean matches(final Method method);
 
     default MethodMatcher or(final MethodMatcher matcher) {
         return new OrMatcher(this, matcher);

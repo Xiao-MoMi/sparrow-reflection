@@ -4,8 +4,6 @@ import java.lang.reflect.Field;
 
 public interface FieldMatcher {
 
-    boolean matches(final Field field);
-
     static FieldMatcher anyOf(final FieldMatcher... matchers) {
         return new AnyOfMatcher(matchers);
     }
@@ -53,6 +51,8 @@ public interface FieldMatcher {
     static FieldMatcher finalMethod() {
         return FinalMatcher.INSTANCE;
     }
+
+    boolean matches(final Field field);
 
     default FieldMatcher or(final FieldMatcher matcher) {
         return new OrMatcher(this, matcher);

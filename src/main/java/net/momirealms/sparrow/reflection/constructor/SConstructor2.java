@@ -5,5 +5,5 @@ import org.jetbrains.annotations.Nullable;
 public interface SConstructor2 {
 
     Object newInstance(@Nullable Object arg0,
-                  @Nullable Object arg1);
+                       @Nullable Object arg1);
 }

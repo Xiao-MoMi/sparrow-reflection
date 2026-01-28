@@ -1,7 +1,7 @@
 package net.momirealms.sparrow.reflection.constructor;
 
-import net.momirealms.sparrow.reflection.util.AsmUtils;
 import net.momirealms.sparrow.reflection.SReflection;
+import net.momirealms.sparrow.reflection.util.AsmUtils;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;

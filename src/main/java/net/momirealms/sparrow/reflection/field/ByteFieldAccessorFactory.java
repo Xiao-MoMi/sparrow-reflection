@@ -62,7 +62,7 @@ final class ByteFieldAccessorFactory implements Opcodes {
         mv = cw.visitMethod(ACC_PUBLIC, "set", "(Ljava/lang/Object;B)V", null, null);
         mv.visitCode();
         if (isStatic) {
-            mv.visitVarInsn(ILOAD, 2); 
+            mv.visitVarInsn(ILOAD, 2);
             mv.visitFieldInsn(PUTSTATIC, ownerInternalName, fieldName, "B");
         } else {
             mv.visitVarInsn(ALOAD, 1);

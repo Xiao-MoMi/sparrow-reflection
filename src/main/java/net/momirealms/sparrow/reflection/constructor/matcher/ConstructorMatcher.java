@@ -4,8 +4,6 @@ import java.lang.reflect.Constructor;
 
 public interface ConstructorMatcher {
 
-    boolean matches(final Constructor<?> constructor);
-
     static ConstructorMatcher anyOf(final ConstructorMatcher... matchers) {
         return new AnyOfMatcher(matchers);
     }
@@ -41,6 +39,8 @@ public interface ConstructorMatcher {
     static ConstructorMatcher protectedConstructor() {
         return ProtectedMatcher.INSTANCE;
     }
+
+    boolean matches(final Constructor<?> constructor);
 
     default ConstructorMatcher or(final ConstructorMatcher matcher) {
         return new OrMatcher(this, matcher);

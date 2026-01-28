@@ -1,7 +1,7 @@
 package net.momirealms.sparrow.reflection.method;
 
-import net.momirealms.sparrow.reflection.util.AsmUtils;
 import net.momirealms.sparrow.reflection.SReflection;
+import net.momirealms.sparrow.reflection.util.AsmUtils;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
@@ -23,7 +23,7 @@ final class MethodInvokerFactory implements Opcodes {
         boolean isStatic = Modifier.isStatic(method.getModifiers());
         Class<?>[] parameterTypes = method.getParameterTypes();
         Class<?> returnType = method.getReturnType();
-        String internalClassName = Type.getInternalName(owner) + "$" + SReflection.PREFIX + "Invoker_" + methodName +  "_" + ID.getAndIncrement(); // 确保后缀唯一，避免类里相同方法重名
+        String internalClassName = Type.getInternalName(owner) + "$" + SReflection.PREFIX + "Invoker_" + methodName + "_" + ID.getAndIncrement(); // 确保后缀唯一，避免类里相同方法重名
         byte[] bytes = generateByteCode(internalClassName, owner, methodName, methodDescriptor, isStatic, parameterTypes, returnType);
         MethodHandles.Lookup lookup = MethodHandles.privateLookupIn(owner, SReflection.LOOKUP);
         MethodHandles.Lookup hiddenLookup = lookup.defineHiddenClass(bytes, true, MethodHandles.Lookup.ClassOption.NESTMATE);
