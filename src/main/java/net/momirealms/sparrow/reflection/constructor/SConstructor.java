@@ -1,6 +1,6 @@
 package net.momirealms.sparrow.reflection.constructor;
 
-public interface SConstructor {
+public abstract class SConstructor {
 
-    Object newInstance(Object... arg);
+    public abstract Object newInstance(Object... arg);
 }

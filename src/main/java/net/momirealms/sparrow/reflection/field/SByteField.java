@@ -2,9 +2,9 @@ package net.momirealms.sparrow.reflection.field;
 
 import org.jetbrains.annotations.Nullable;
 
-public interface SByteField {
+public abstract class SByteField {
 
-    byte get(@Nullable Object instance);
+    public abstract byte get(@Nullable Object instance);
 
-    void set(@Nullable Object instance, byte value);
+    public abstract void set(@Nullable Object instance, byte value);
 }

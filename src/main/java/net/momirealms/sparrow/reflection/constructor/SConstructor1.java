@@ -2,7 +2,7 @@ package net.momirealms.sparrow.reflection.constructor;
 
 import org.jetbrains.annotations.Nullable;
 
-public interface SConstructor1 {
+public abstract class SConstructor1 {
 
-    Object newInstance(@Nullable Object arg0);
+    public abstract Object newInstance(@Nullable Object arg0);
 }

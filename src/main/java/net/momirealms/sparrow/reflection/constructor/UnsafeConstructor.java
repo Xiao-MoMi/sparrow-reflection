@@ -5,7 +5,7 @@ import net.momirealms.sparrow.reflection.exception.SparrowReflectionException;
 
 import java.lang.reflect.Constructor;
 
-final class UnsafeConstructor implements SConstructor {
+final class UnsafeConstructor extends SConstructor {
     private final Class<?> clazz;
 
     UnsafeConstructor(Constructor<?> constructor) {

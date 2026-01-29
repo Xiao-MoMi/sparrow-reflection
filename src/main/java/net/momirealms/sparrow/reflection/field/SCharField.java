@@ -2,9 +2,9 @@ package net.momirealms.sparrow.reflection.field;
 
 import org.jetbrains.annotations.Nullable;
 
-public interface SCharField {
+public abstract class SCharField {
 
-    char get(@Nullable Object instance);
+    public abstract char get(@Nullable Object instance);
 
-    void set(@Nullable Object instance, char value);
+    public abstract void set(@Nullable Object instance, char value);
 }

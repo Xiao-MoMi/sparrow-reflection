@@ -2,9 +2,9 @@ package net.momirealms.sparrow.reflection.field;
 
 import org.jetbrains.annotations.Nullable;
 
-public interface SShortField {
+public abstract class SShortField {
 
-    short get(@Nullable Object instance);
+    public abstract short get(@Nullable Object instance);
 
-    void set(@Nullable Object instance, short value);
+    public abstract void set(@Nullable Object instance, short value);
 }

@@ -13,9 +13,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 @SuppressWarnings("DuplicatedCode")
 final class OptimizedConstructorInvokerFactory implements Opcodes {
-
+    private OptimizedConstructorInvokerFactory() {}
     private static final AtomicInteger ID = new AtomicInteger(0);
-    private static final Class<?>[] INTERFACES = new Class<?>[]{
+    private static final Class<?>[] ABSTRACT_CLASSES = new Class<?>[]{
             SConstructor0.class, SConstructor1.class, SConstructor2.class, SConstructor3.class,
             SConstructor4.class, SConstructor5.class, SConstructor6.class, SConstructor7.class,
             SConstructor8.class, SConstructor9.class, SConstructor10.class
@@ -27,16 +27,15 @@ final class OptimizedConstructorInvokerFactory implements Opcodes {
         String constructorDescriptor = Type.getConstructorDescriptor(constructor);
         Class<?>[] parameterTypes = constructor.getParameterTypes();
 
-        Class<?> targetInterface = INTERFACES[parameterTypes.length];
-        String suffix = targetInterface.getSimpleName().replace("SConstructor", "");
-        String internalClassName = Type.getInternalName(owner) + "$" + SReflection.PREFIX + "ConstructorInvoker" + suffix + "_" + ID.getAndIncrement();
+        Class<?> targetAbstractClass = ABSTRACT_CLASSES[parameterTypes.length];
+        String internalClassName = Type.getInternalName(owner) + "$" + SReflection.PREFIX + "ConstructorInvoker" + parameterTypes.length + "_" + ID.getAndIncrement();
 
         byte[] bytes = generateByteCode(
                 internalClassName,
                 owner,
                 constructorDescriptor,
                 parameterTypes,
-                targetInterface
+                targetAbstractClass
         );
 
         MethodHandles.Lookup lookup = MethodHandles.privateLookupIn(owner, SReflection.LOOKUP);
@@ -49,22 +48,28 @@ final class OptimizedConstructorInvokerFactory implements Opcodes {
             Class<?> owner,
             String desc,
             Class<?>[] params,
-            Class<?> interfaceClass) {
+            Class<?> abstractClass) {
 
         ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
-        cw.visit(V17, ACC_PUBLIC | ACC_FINAL, className, null, "java/lang/Object", new String[]{Type.getInternalName(interfaceClass)});
+        String superName = Type.getInternalName(abstractClass);
+
+        cw.visit(V17, ACC_PUBLIC | ACC_FINAL, className, null, superName, null);
 
         MethodVisitor mv = cw.visitMethod(ACC_PUBLIC, "<init>", "()V", null, null);
         mv.visitCode();
         mv.visitVarInsn(ALOAD, 0);
-        mv.visitMethodInsn(INVOKESPECIAL, "java/lang/Object", "<init>", "()V", false);
+        mv.visitMethodInsn(INVOKESPECIAL, superName, "<init>", "()V", false);
         mv.visitInsn(RETURN);
         mv.visitMaxs(0, 0);
         mv.visitEnd();
 
-        String interfaceDesc = "(" + "Ljava/lang/Object;".repeat(params.length) + ")Ljava/lang/Object;";
+        StringBuilder interfaceDesc = new StringBuilder("(");
+        for (int i = 0; i < params.length; i++) {
+            interfaceDesc.append("Ljava/lang/Object;");
+        }
+        interfaceDesc.append(")Ljava/lang/Object;");
 
-        mv = cw.visitMethod(ACC_PUBLIC, "newInstance", interfaceDesc, null, null);
+        mv = cw.visitMethod(ACC_PUBLIC, "newInstance", interfaceDesc.toString(), null, null);
         mv.visitCode();
 
         String ownerInternalName = Type.getInternalName(owner);

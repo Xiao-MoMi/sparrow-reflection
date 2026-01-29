@@ -2,9 +2,9 @@ package net.momirealms.sparrow.reflection.field;
 
 import org.jetbrains.annotations.Nullable;
 
-public interface SIntField {
+public abstract class SIntField {
 
-    int get(@Nullable Object instance);
+    public abstract int get(@Nullable Object instance);
 
-    void set(@Nullable Object instance, int value);
+    public abstract void set(@Nullable Object instance, int value);
 }

@@ -2,9 +2,9 @@ package net.momirealms.sparrow.reflection.field;
 
 import org.jetbrains.annotations.Nullable;
 
-public interface SDoubleField {
+public abstract class SDoubleField {
 
-    double get(@Nullable Object instance);
+    public abstract double get(@Nullable Object instance);
 
-    void set(@Nullable Object instance, double value);
+    public abstract void set(@Nullable Object instance, double value);
 }

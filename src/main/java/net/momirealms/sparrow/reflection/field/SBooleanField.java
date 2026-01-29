@@ -2,9 +2,9 @@ package net.momirealms.sparrow.reflection.field;
 
 import org.jetbrains.annotations.Nullable;
 
-public interface SBooleanField {
+public abstract class SBooleanField {
 
-    boolean get(@Nullable Object instance);
+    public abstract boolean get(@Nullable Object instance);
 
-    void set(@Nullable Object instance, boolean value);
+    public abstract void set(@Nullable Object instance, boolean value);
 }

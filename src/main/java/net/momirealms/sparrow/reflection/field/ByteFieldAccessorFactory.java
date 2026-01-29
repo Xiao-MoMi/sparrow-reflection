@@ -9,10 +9,13 @@ import org.objectweb.asm.Type;
 import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @SuppressWarnings("DuplicatedCode")
 final class ByteFieldAccessorFactory implements Opcodes {
     private ByteFieldAccessorFactory() {}
+    private static final AtomicInteger ID = new AtomicInteger(0);
+    private static final String ABSTRACT_CLASS_INTERNAL_NAME = Type.getInternalName(SByteField.class);
 
     static SByteField create(Field field) throws Exception {
         if (field.getType() != byte.class) {
@@ -21,7 +24,7 @@ final class ByteFieldAccessorFactory implements Opcodes {
         Class<?> owner = field.getDeclaringClass();
         String fieldName = field.getName();
         boolean isStatic = Modifier.isStatic(field.getModifiers());
-        String internalClassName = Type.getInternalName(owner) + "$" + SReflection.PREFIX + "ByteAccessor_" + fieldName;
+        String internalClassName = Type.getInternalName(owner) + "$" + SReflection.PREFIX + "ByteAccessor_" + fieldName + "_" + ID.getAndIncrement();
         byte[] bytes = generateByteCode(internalClassName, owner, fieldName, isStatic);
         MethodHandles.Lookup lookup = MethodHandles.privateLookupIn(owner, SReflection.LOOKUP);
         MethodHandles.Lookup hiddenLookup = lookup.defineHiddenClass(bytes, true, MethodHandles.Lookup.ClassOption.NESTMATE);
@@ -31,20 +34,17 @@ final class ByteFieldAccessorFactory implements Opcodes {
     private static byte[] generateByteCode(String className, Class<?> owner, String fieldName, boolean isStatic) {
         ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
         String ownerInternalName = Type.getInternalName(owner);
-        String interfaceInternalName = Type.getInternalName(SByteField.class);
 
-        cw.visit(V17, ACC_PUBLIC | ACC_FINAL, className, null, "java/lang/Object", new String[]{interfaceInternalName});
+        cw.visit(V17, ACC_PUBLIC | ACC_FINAL, className, null, ABSTRACT_CLASS_INTERNAL_NAME, null);
 
-        // 默认构造函数
         MethodVisitor mv = cw.visitMethod(ACC_PUBLIC, "<init>", "()V", null, null);
         mv.visitCode();
         mv.visitVarInsn(ALOAD, 0);
-        mv.visitMethodInsn(INVOKESPECIAL, "java/lang/Object", "<init>", "()V", false);
+        mv.visitMethodInsn(INVOKESPECIAL, ABSTRACT_CLASS_INTERNAL_NAME, "<init>", "()V", false);
         mv.visitInsn(RETURN);
         mv.visitMaxs(0, 0);
         mv.visitEnd();
 
-        // 实现 byte get(Object instance)
         mv = cw.visitMethod(ACC_PUBLIC, "get", "(Ljava/lang/Object;)B", null, null);
         mv.visitCode();
         if (isStatic) {
@@ -54,11 +54,10 @@ final class ByteFieldAccessorFactory implements Opcodes {
             mv.visitTypeInsn(CHECKCAST, ownerInternalName);
             mv.visitFieldInsn(GETFIELD, ownerInternalName, fieldName, "B");
         }
-        mv.visitInsn(IRETURN); // byte 在栈上作为 int 返回
+        mv.visitInsn(IRETURN);
         mv.visitMaxs(0, 0);
         mv.visitEnd();
 
-        // 实现 void set(Object instance, byte value)
         mv = cw.visitMethod(ACC_PUBLIC, "set", "(Ljava/lang/Object;B)V", null, null);
         mv.visitCode();
         if (isStatic) {

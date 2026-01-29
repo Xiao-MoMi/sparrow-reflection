@@ -14,6 +14,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 @SuppressWarnings("DuplicatedCode")
 final class OptimizedMethodInvokerFactory implements Opcodes {
+    private OptimizedMethodInvokerFactory() {}
     private static final AtomicInteger ID = new AtomicInteger(0);
     private static final Class<?>[] INTERFACES = new Class<?>[]{
             SMethod0.class, SMethod1.class, SMethod2.class, SMethod3.class,
@@ -58,22 +59,22 @@ final class OptimizedMethodInvokerFactory implements Opcodes {
             boolean isStatic,
             Class<?>[] params,
             Class<?> returnType,
-            Class<?> interfaceClass) {
+            Class<?> abstractClass) {
 
         ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
-        cw.visit(V17, ACC_PUBLIC | ACC_FINAL, className, null, "java/lang/Object", new String[]{Type.getInternalName(interfaceClass)});
 
-        // 构造函数
+        String superName = Type.getInternalName(abstractClass);
+
+        cw.visit(V17, ACC_PUBLIC | ACC_FINAL, className, null, superName, null);
+
         MethodVisitor mv = cw.visitMethod(ACC_PUBLIC, "<init>", "()V", null, null);
         mv.visitCode();
         mv.visitVarInsn(ALOAD, 0);
-        mv.visitMethodInsn(INVOKESPECIAL, "java/lang/Object", "<init>", "()V", false);
+        mv.visitMethodInsn(INVOKESPECIAL, superName, "<init>", "()V", false);
         mv.visitInsn(RETURN);
         mv.visitMaxs(0, 0);
         mv.visitEnd();
 
-        // 动态生成接口方法实现
-        // 接口方法签名始终是 (Object instance, Object arg0, ...) -> Object
         String desc = "(Ljava/lang/Object;" + "Ljava/lang/Object;".repeat(params.length) +
                 ")Ljava/lang/Object;";
 

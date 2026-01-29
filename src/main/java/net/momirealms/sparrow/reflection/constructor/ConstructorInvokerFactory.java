@@ -13,7 +13,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 @SuppressWarnings("DuplicatedCode")
 final class ConstructorInvokerFactory implements Opcodes {
+    private ConstructorInvokerFactory() {}
     private static final AtomicInteger ID = new AtomicInteger(0);
+    private static final String ABSTRACT_CLASS_INTERNAL_NAME = Type.getInternalName(SConstructor.class);
 
     static SConstructor create(Constructor<?> constructor) throws Exception {
         Class<?> owner = constructor.getDeclaringClass();
@@ -29,12 +31,12 @@ final class ConstructorInvokerFactory implements Opcodes {
     private static byte[] generateByteCode(String className, Class<?> owner, String descriptor, Class<?>[] params) {
         ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
 
-        cw.visit(V17, ACC_PUBLIC | ACC_FINAL, className, null, "java/lang/Object", new String[]{Type.getInternalName(SConstructor.class)});
+        cw.visit(V17, ACC_PUBLIC | ACC_FINAL, className, null, ABSTRACT_CLASS_INTERNAL_NAME, null);
 
         MethodVisitor mv = cw.visitMethod(ACC_PUBLIC, "<init>", "()V", null, null);
         mv.visitCode();
         mv.visitVarInsn(ALOAD, 0);
-        mv.visitMethodInsn(INVOKESPECIAL, "java/lang/Object", "<init>", "()V", false);
+        mv.visitMethodInsn(INVOKESPECIAL, ABSTRACT_CLASS_INTERNAL_NAME, "<init>", "()V", false);
         mv.visitInsn(RETURN);
         mv.visitMaxs(0, 0);
         mv.visitEnd();

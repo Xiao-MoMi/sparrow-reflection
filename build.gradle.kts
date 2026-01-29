@@ -8,7 +8,7 @@ repositories {
 }
 
 group = "net.momirealms"
-version = "1.0.0"
+version = "0.2"
 
 dependencies {
     implementation("org.ow2.asm:asm:9.9")

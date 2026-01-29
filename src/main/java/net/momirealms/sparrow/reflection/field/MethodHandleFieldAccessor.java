@@ -11,7 +11,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.Objects;
 
-final class MethodHandleFieldAccessor implements SField {
+final class MethodHandleFieldAccessor extends SField {
     private final boolean isStatic;
     private final MethodHandle rawGetter;
     private final MethodHandle rawSetter;

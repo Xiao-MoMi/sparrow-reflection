@@ -2,7 +2,7 @@ package net.momirealms.sparrow.reflection.method;
 
 import org.jetbrains.annotations.Nullable;
 
-public interface SMethod0 {
+public abstract class SMethod0 {
 
-    Object invoke(@Nullable Object instance);
+    public abstract Object invoke(@Nullable Object instance);
 }

@@ -11,6 +11,6 @@ public class TypeMatcher implements FieldMatcher {
 
     @Override
     public boolean matches(Field field) {
-        return type.equals(field.getType());
+        return this.type.equals(field.getType());
     }
 }

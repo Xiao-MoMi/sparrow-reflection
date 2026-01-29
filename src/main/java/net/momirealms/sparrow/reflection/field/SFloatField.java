@@ -2,9 +2,9 @@ package net.momirealms.sparrow.reflection.field;
 
 import org.jetbrains.annotations.Nullable;
 
-public interface SFloatField {
+public abstract class SFloatField {
 
-    float get(@Nullable Object instance);
+    public abstract float get(@Nullable Object instance);
 
-    void set(@Nullable Object instance, float value);
+    public abstract void set(@Nullable Object instance, float value);
 }
