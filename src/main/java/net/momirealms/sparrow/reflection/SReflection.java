@@ -1,6 +1,8 @@
 package net.momirealms.sparrow.reflection;
 
 import net.momirealms.sparrow.reflection.exception.SparrowReflectionException;
+import net.momirealms.sparrow.reflection.remapper.NoRemap;
+import net.momirealms.sparrow.reflection.remapper.Remapper;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import sun.misc.Unsafe;
@@ -15,6 +17,7 @@ import java.util.Objects;
 
 public final class SReflection {
     public static String PREFIX = "Sparrow";
+    public static Remapper REMAPPER = NoRemap.INSTANCE;
     public static final Unsafe UNSAFE;
     public static final MethodHandles.Lookup LOOKUP;
     private static final MethodHandle method$MethodHandleNatives$refKindIsSetter;
@@ -23,8 +26,8 @@ public final class SReflection {
     private static final MethodHandle method$MethodHandles$Lookup$getDirectField;
     private static final MethodHandle methodHandle$ClassFile$readClassFile;
     private static final Object instance$defaultDumper;
-    private static final MethodHandle methodHandle$ClassDefiner$Constructor;
-    private static final MethodHandle methodHandle$ClassDefiner$defineClass;
+    private static final MethodHandle constructor$ClassDefiner;
+    private static final MethodHandle method$ClassDefiner$defineClass;
 
     static {
         try {
@@ -45,8 +48,8 @@ public final class SReflection {
             methodHandle$ClassFile$readClassFile = Objects.requireNonNull(SReflection.unreflectMethod(clazz$ClassFile.getDeclaredMethod("readClassFile", byte[].class)));
             instance$defaultDumper = Objects.requireNonNull(SReflection.unreflectMethod(MethodHandles.Lookup.class.getDeclaredMethod("defaultDumper"))).invoke();
             Class<?> clazz$ClassDefiner = Class.forName("java.lang.invoke.MethodHandles$Lookup$ClassDefiner");
-            methodHandle$ClassDefiner$Constructor = Objects.requireNonNull(SReflection.unreflectConstructor(clazz$ClassDefiner.getDeclaredConstructors()[0]));
-            methodHandle$ClassDefiner$defineClass = Objects.requireNonNull(SReflection.unreflectMethod(clazz$ClassDefiner.getDeclaredMethod("defineClass", boolean.class)));
+            constructor$ClassDefiner = Objects.requireNonNull(SReflection.unreflectConstructor(clazz$ClassDefiner.getDeclaredConstructors()[0]));
+            method$ClassDefiner$defineClass = Objects.requireNonNull(SReflection.unreflectMethod(clazz$ClassDefiner.getDeclaredMethod("defineClass", boolean.class)));
         } catch (Throwable e) {
             throw new SparrowReflectionException("Failed to init Reflection", e);
         }
@@ -56,6 +59,10 @@ public final class SReflection {
 
     public static void setPrefix(String prefix) {
         SReflection.PREFIX = prefix;
+    }
+
+    public static void setRemapper(Remapper remapper) {
+        SReflection.REMAPPER = remapper;
     }
 
     @Nullable
@@ -165,7 +172,7 @@ public final class SReflection {
 
     public static Class<?> defineClass(MethodHandles.Lookup lookup, byte[] bytes) throws Throwable {
         Object classFile = methodHandle$ClassFile$readClassFile.invoke(bytes);
-        Object classDefiner = methodHandle$ClassDefiner$Constructor.invoke(lookup, classFile, /* STRONG_LOADER_LINK */ 4, instance$defaultDumper);
-        return (Class<?>) methodHandle$ClassDefiner$defineClass.invoke(classDefiner, true);
+        Object classDefiner = constructor$ClassDefiner.invoke(lookup, classFile, /* STRONG_LOADER_LINK */ 4, instance$defaultDumper);
+        return (Class<?>) method$ClassDefiner$defineClass.invoke(classDefiner, true);
     }
 }
