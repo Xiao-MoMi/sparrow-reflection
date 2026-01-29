@@ -2,71 +2,71 @@ package net.momirealms.sparrow.reflection.field.matcher;
 
 public interface FieldMatchers {
 
-    static FieldMatcher any() {
+    static FieldMatcher fAny() {
         return AnyMatcher.INSTANCE;
     }
 
-    static FieldMatcher anyOf(final FieldMatcher... matchers) {
+    static FieldMatcher fAnyOf(final FieldMatcher... matchers) {
         return new AnyOfMatcher(matchers);
     }
 
-    static FieldMatcher allOf(final FieldMatcher... matchers) {
+    static FieldMatcher fAllOf(final FieldMatcher... matchers) {
         return new AllOfMatcher(matchers);
     }
 
-    static FieldMatcher not(final FieldMatcher matcher) {
+    static FieldMatcher fNot(final FieldMatcher matcher) {
         return new NotMatcher(matcher);
     }
 
-    static FieldMatcher noneOf(final FieldMatcher... matchers) {
-        return not(anyOf(matchers));
+    static FieldMatcher fNoneOf(final FieldMatcher... matchers) {
+        return fNot(fAnyOf(matchers));
     }
 
-    static FieldMatcher named(String name) {
+    static FieldMatcher fNamed(String name) {
         return new NameMatcher(name, true);
     }
 
-    static FieldMatcher namedNoRemap(String name) {
+    static FieldMatcher fNamedNoRemap(String name) {
         return new NameMatcher(name, false);
     }
 
-    static FieldMatcher named(String... names) {
+    static FieldMatcher fNamed(String... names) {
         return new NamesMatcher(names, true);
     }
 
-    static FieldMatcher namedNoRemap(String... names) {
+    static FieldMatcher fNamedNoRemap(String... names) {
         return new NamesMatcher(names, false);
     }
 
-    static FieldMatcher type(Class<?> clazz) {
+    static FieldMatcher fType(Class<?> clazz) {
         return new TypeMatcher(clazz);
     }
 
-    static FieldMatcher type(net.momirealms.sparrow.reflection.type.matcher.TypeMatcher typeMatcher) {
+    static FieldMatcher fType(net.momirealms.sparrow.reflection.type.matcher.TypeMatcher typeMatcher) {
         return new GenericTypeMatcher(typeMatcher);
     }
 
-    static FieldMatcher privateMethod() {
+    static FieldMatcher fPrivate() {
         return PrivateMatcher.INSTANCE;
     }
 
-    static FieldMatcher publicMethod() {
+    static FieldMatcher fPublic() {
         return PublicMatcher.INSTANCE;
     }
 
-    static FieldMatcher protectedMethod() {
+    static FieldMatcher fProtected() {
         return ProtectedMatcher.INSTANCE;
     }
 
-    static FieldMatcher staticMethod() {
+    static FieldMatcher fStatic() {
         return StaticMatcher.INSTANCE;
     }
 
-    static FieldMatcher instanceMethod() {
+    static FieldMatcher fInstance() {
         return InstanceMatcher.INSTANCE;
     }
 
-    static FieldMatcher finalMethod() {
+    static FieldMatcher fFinal() {
         return FinalMatcher.INSTANCE;
     }
 }

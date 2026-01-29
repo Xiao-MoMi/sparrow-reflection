@@ -11,13 +11,13 @@ repositories {
 }
 
 group = "net.momirealms"
-version = "0.2"
+version = "0.3"
 
 dependencies {
     compileOnly("io.papermc.paper:paper-api:1.21.11-R0.1-SNAPSHOT")
-    compileOnly("org.ow2.asm:asm:9.9")
+    implementation("org.ow2.asm:asm:9.9")
     compileOnly("org.jetbrains:annotations:26.0.2-1")
-    compileOnly("net.fabricmc:mapping-io:0.8.0")
+    implementation("net.fabricmc:mapping-io:0.8.0")
 }
 
 java {
@@ -42,6 +42,7 @@ tasks {
         archiveClassifier = ""
         archiveFileName = "sparrow-reflection-${project.version}.jar"
         destinationDirectory.set(file("$rootDir/target"))
+        relocate("net.fabricmc.mappingio", "net.momirealms.sparrow.reflection.lib.mappingio")
     }
 }
 
@@ -61,7 +62,8 @@ publishing {
             groupId = "net.momirealms"
             artifactId = "sparrow-reflection"
             version = project.version.toString()
-            from(components["java"])
+            artifact(tasks["sourcesJar"])
+            from(components["shadow"])
             pom {
                 name = "Sparrow Reflection"
                 url = "https://github.com/Xiao-MoMi/sparrow-reflection"

@@ -16,6 +16,7 @@ import java.util.Objects;
 
 public final class SReflection {
     private static final String YOU_SHOULD_RELOCATE_THIS = "net{}momirealms{}sparrow{}reflection";
+    private static final boolean TEST_ENVIRONMENT = false;
     public static final Unsafe UNSAFE;
     public static final MethodHandles.Lookup LOOKUP;
     private static final MethodHandle method$MethodHandleNatives$refKindIsSetter;
@@ -29,7 +30,9 @@ public final class SReflection {
 
     static {
         try {
-            checkRelocation();
+            if (!TEST_ENVIRONMENT) {
+                checkRelocation();
+            }
             Field unsafeField = Unsafe.class.getDeclaredField("theUnsafe");
             unsafeField.setAccessible(true);
             UNSAFE = (Unsafe) unsafeField.get(null);

@@ -4,87 +4,87 @@ import net.momirealms.sparrow.reflection.type.matcher.TypeMatcher;
 
 public interface MethodMatchers {
 
-    static MethodMatcher any() {
+    static MethodMatcher mAny() {
         return AnyMatcher.INSTANCE;
     }
 
-    static MethodMatcher anyOf(final MethodMatcher... matchers) {
+    static MethodMatcher mAnyOf(final MethodMatcher... matchers) {
         return new AnyOfMatcher(matchers);
     }
 
-    static MethodMatcher allOf(final MethodMatcher... matchers) {
+    static MethodMatcher mAllOf(final MethodMatcher... matchers) {
         return new AllOfMatcher(matchers);
     }
 
-    static MethodMatcher not(final MethodMatcher matcher) {
+    static MethodMatcher mNot(final MethodMatcher matcher) {
         return new NotMatcher(matcher);
     }
 
-    static MethodMatcher noneOf(final MethodMatcher... matchers) {
-        return not(anyOf(matchers));
+    static MethodMatcher mNoneOf(final MethodMatcher... matchers) {
+        return mNot(mAnyOf(matchers));
     }
 
-    static MethodMatcher named(String name) {
+    static MethodMatcher mNamed(String name) {
         return new NameMatcher(name, true);
     }
 
-    static MethodMatcher namedNoRemap(String name) {
+    static MethodMatcher mNamedNoRemap(String name) {
         return new NameMatcher(name, false);
     }
 
-    static MethodMatcher named(String... names) {
+    static MethodMatcher mNamed(String... names) {
         return new NamesMatcher(names, true);
     }
 
-    static MethodMatcher namedNoRemap(String... names) {
+    static MethodMatcher mNamedNoRemap(String... names) {
         return new NamesMatcher(names, false);
     }
 
-    static MethodMatcher returnType(final Class<?> type) {
+    static MethodMatcher mReturnType(final Class<?> type) {
         return new ReturnTypeMatcher(type);
     }
 
-    static MethodMatcher returnType(final TypeMatcher matcher) {
+    static MethodMatcher mReturnType(final TypeMatcher matcher) {
         return new GenericReturnTypeMatcher(matcher);
     }
 
-    static MethodMatcher takeArguments(final Class<?>... types) {
+    static MethodMatcher mTakeArguments(final Class<?>... types) {
         return new TakeArgumentsMatcher(types);
     }
 
-    static MethodMatcher takeArguments(final TypeMatcher... matchers) {
+    static MethodMatcher mTakeArguments(final TypeMatcher... matchers) {
         return new TakeGenericArgumentsMatcher(matchers);
     }
 
-    static MethodMatcher takeArgument(final int index, final Class<?> type) {
+    static MethodMatcher mTakeArgument(final int index, final Class<?> type) {
         return new TakeArgumentMatcher(index, type);
     }
 
-    static MethodMatcher takeArgument(final int index, final TypeMatcher matcher) {
+    static MethodMatcher mTakeArgument(final int index, final TypeMatcher matcher) {
         return new TakeGenericArgumentMatcher(index, matcher);
     }
 
-    static MethodMatcher privateMethod() {
+    static MethodMatcher mPrivate() {
         return PrivateMatcher.INSTANCE;
     }
 
-    static MethodMatcher publicMethod() {
+    static MethodMatcher mPublic() {
         return PublicMatcher.INSTANCE;
     }
 
-    static MethodMatcher protectedMethod() {
+    static MethodMatcher mProtected() {
         return ProtectedMatcher.INSTANCE;
     }
 
-    static MethodMatcher staticMethod() {
+    static MethodMatcher mStatic() {
         return StaticMatcher.INSTANCE;
     }
 
-    static MethodMatcher instanceMethod() {
+    static MethodMatcher mInstance() {
         return InstanceMatcher.INSTANCE;
     }
 
-    static MethodMatcher finalMethod() {
+    static MethodMatcher mFinal() {
         return FinalMatcher.INSTANCE;
     }
 }

@@ -2,53 +2,53 @@ package net.momirealms.sparrow.reflection.constructor.matcher;
 
 import net.momirealms.sparrow.reflection.type.matcher.TypeMatcher;
 
-public class ConstructorMatchers {
+public interface ConstructorMatchers {
 
-    static ConstructorMatcher any() {
+    static ConstructorMatcher cAny() {
         return AnyMatcher.INSTANCE;
     }
 
-    static ConstructorMatcher anyOf(final ConstructorMatcher... matchers) {
+    static ConstructorMatcher cAnyOf(final ConstructorMatcher... matchers) {
         return new AnyOfMatcher(matchers);
     }
 
-    static ConstructorMatcher allOf(final ConstructorMatcher... matchers) {
+    static ConstructorMatcher cAllOf(final ConstructorMatcher... matchers) {
         return new AllOfMatcher(matchers);
     }
 
-    static ConstructorMatcher not(final ConstructorMatcher matcher) {
+    static ConstructorMatcher cNot(final ConstructorMatcher matcher) {
         return new NotMatcher(matcher);
     }
 
-    static ConstructorMatcher noneOf(final ConstructorMatcher... matchers) {
-        return not(anyOf(matchers));
+    static ConstructorMatcher cNoneOf(final ConstructorMatcher... matchers) {
+        return cNot(cAnyOf(matchers));
     }
 
-    static ConstructorMatcher takeArguments(final Class<?>... types) {
+    static ConstructorMatcher cTakeArguments(final Class<?>... types) {
         return new TakeArgumentsMatcher(types);
     }
 
-    static ConstructorMatcher takeArguments(final TypeMatcher... matchers) {
+    static ConstructorMatcher cTakeArguments(final TypeMatcher... matchers) {
         return new TakeGenericArgumentsMatcher(matchers);
     }
 
-    static ConstructorMatcher takeArgument(final int index, final Class<?> type) {
+    static ConstructorMatcher cTakeArgument(final int index, final Class<?> type) {
         return new TakeArgumentMatcher(index, type);
     }
 
-    static ConstructorMatcher takeArgument(final int index, final TypeMatcher matcher) {
+    static ConstructorMatcher cTakeArgument(final int index, final TypeMatcher matcher) {
         return new TakeGenericArgumentMatcher(index, matcher);
     }
 
-    static ConstructorMatcher privateConstructor() {
+    static ConstructorMatcher cPrivate() {
         return PrivateMatcher.INSTANCE;
     }
 
-    static ConstructorMatcher publicConstructor() {
+    static ConstructorMatcher cPublic() {
         return PublicMatcher.INSTANCE;
     }
 
-    static ConstructorMatcher protectedConstructor() {
+    static ConstructorMatcher cProtected() {
         return ProtectedMatcher.INSTANCE;
     }
 }
