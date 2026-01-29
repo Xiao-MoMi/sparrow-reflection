@@ -41,7 +41,6 @@ tasks {
     shadowJar {
         archiveClassifier = ""
         archiveFileName = "sparrow-reflection-${project.version}.jar"
-        relocate("net.kyori", "net.momirealms.craftengine.libraries")
         destinationDirectory.set(file("$rootDir/target"))
     }
 }
