@@ -13,7 +13,7 @@ group = "net.momirealms"
 version = "0.5"
 
 dependencies {
-    implementation("org.ow2.asm:asm:9.9")
+    compileOnly("org.ow2.asm:asm:9.9")
     compileOnly("org.jetbrains:annotations:26.0.2-1")
     implementation("net.fabricmc:mapping-io:0.8.0")
 }
