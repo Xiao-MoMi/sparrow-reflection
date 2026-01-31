@@ -10,7 +10,7 @@ repositories {
 }
 
 group = "net.momirealms"
-version = "0.5"
+version = "0.6"
 
 dependencies {
     compileOnly("org.ow2.asm:asm:9.9")
