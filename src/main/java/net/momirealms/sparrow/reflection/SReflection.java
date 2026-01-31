@@ -16,7 +16,7 @@ import java.util.Objects;
 
 public final class SReflection {
     private static final String YOU_SHOULD_RELOCATE_THIS = "net{}momirealms{}sparrow{}reflection";
-    private static final boolean TEST_ENVIRONMENT = false;
+    private static final boolean TEST_ENVIRONMENT = true;
     public static final Unsafe UNSAFE;
     public static final MethodHandles.Lookup LOOKUP;
     private static final MethodHandle method$MethodHandleNatives$refKindIsSetter;

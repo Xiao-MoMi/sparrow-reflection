@@ -88,3 +88,150 @@ public final class Example {
     }
 }
 ```
+
+### 反射代理
+
+**目前存在的缺陷：**
+- ProxyFactory.newJavaProxy 当前基于Java代理实现，底层使用ASM生成机制，但由于代理机制限制，每次调用相比原生方法需额外增加一次HashMap查找和数组参数转换开销，执行效率显著低于直接调用。
+- ProxyFactory.newAsmProxy 尚未实现，其目标是直接生成高度优化的代理类，通过为每个方法生成最优化的字节码来彻底消除额外开销，实现接近原生的执行性能。
+
+以下是一些测试用数据类
+
+```java
+package net.momirealms.sparrow.reflection;
+
+import java.util.concurrent.ThreadLocalRandom;
+
+public class Player {
+
+    public void sayHello() {
+        System.out.println("Hello World!");
+    }
+
+    public static String getRandomString(int length) {
+        return String.valueOf(ThreadLocalRandom.current().nextInt(0, length));
+    }
+}
+```
+```java
+package net.momirealms.sparrow.reflection;
+
+import java.util.UUID;
+
+public class ServerPlayer extends Player {
+    private final UUID uuid;
+    private final String name;
+    private final ServerLevel level;
+
+    public ServerPlayer(UUID uuid, String name, ServerLevel level) {
+        this.uuid = uuid;
+        this.name = name;
+        this.level = level;
+    }
+
+    public UUID uuid() {
+        return this.uuid;
+    }
+
+    public String name() {
+        return this.name;
+    }
+
+    public ServerLevel level() {
+        return level;
+    }
+}
+```
+```java
+package net.momirealms.sparrow.reflection;
+
+public class ServerLevel {
+    private int time;
+
+    public ServerLevel(int time) {
+        this.time = time;
+    }
+
+    public int time() {
+        return time;
+    }
+
+    public int setTime(int time) {
+        int prev = this.time;
+        this.time = time;
+        return prev;
+    }
+}
+```
+
+以下是反射代理使用方法。
+
+```java
+package net.momirealms.sparrow.reflection;
+
+import net.momirealms.sparrow.reflection.proxy.ProxyFactory;
+import net.momirealms.sparrow.reflection.proxy.Strategy;
+import net.momirealms.sparrow.reflection.proxy.annotation.*;
+
+import java.util.UUID;
+
+public class ProxyExample {
+
+    public static void main(String[] args) {
+        // 创建代理工厂
+        ProxyFactory proxyFactory = ProxyFactory.create(ProxyExample.class.getClassLoader());
+        // 假设存在已有对象
+        ServerLevel serverLevel = new ServerLevel(666);
+        
+        // 创建 ServerLevelProxy 并通过代理接口设置世界时间
+        ServerLevelProxy serverLevelProxy = proxyFactory.newJavaProxy(ServerLevelProxy.class);
+        int previous = serverLevelProxy.setTime(serverLevel, 100);
+        System.out.println(previous);
+
+        // 创建 ServerPlayerProxy 并调用其构造器
+        ServerPlayerProxy serverPlayerProxy = proxyFactory.newJavaProxy(ServerPlayerProxy.class);
+        Object serverPlayer = serverPlayerProxy.newInstance(UUID.randomUUID(), "XiaoMoMi", serverLevel);
+        // 调用父类方法
+        serverPlayerProxy.sayHello(serverPlayer);
+        // 调用父类静态方法
+        serverPlayerProxy.getRandomString(100);
+        // 调用方法
+        System.out.println(serverPlayerProxy.getUUID(serverPlayer));
+        // 修改私有字段
+        serverPlayerProxy.setUUID(serverPlayer, UUID.randomUUID());
+        System.out.println(serverPlayerProxy.getUUID(serverPlayer));
+    }
+
+    @ReflectionProxy(clazz = Player.class)
+    public interface PlayerProxy {
+
+        @MethodInvoker(name = "sayHello")
+        void sayHello(Object player);
+
+        @MethodInvoker(name = "getRandomString", isStatic = true /* 静态方法或者静态字段需要设置此参数 */)
+        String getRandomString(int length);
+    }
+
+    // 如果你设置了 remapper, 此类名会在相应环境下自动映射为新类名
+    @ReflectionProxy(name = "net.momirealms.sparrow.reflection.ServerPlayer")
+    public interface ServerPlayerProxy extends PlayerProxy {
+
+        @ConstructorInvoker
+        Object newInstance(UUID uuid, String name, @Type(clazz = ServerLevelProxy.class) Object level /* 对于不可访问的类使用 Type 注解 */);
+
+        @FieldSetter(name = "uuid", strategy = Strategy.MH)
+        void setUUID(Object player, UUID uuid);
+
+        @FieldGetter(name = "uuid")
+        UUID getUUID(Object player);
+    }
+
+    // 支持不同版本不同命名
+    @ReflectionProxy(names = {"net.momirealms.sparrow.reflection.ServerLevel", "another.version.ServerLevel"})
+    public interface ServerLevelProxy {
+
+        @MethodInvoker(names = {"setTime", "setTimeNow"})
+        int setTime(Object serverLevel, int time);
+    }
+}
+```
