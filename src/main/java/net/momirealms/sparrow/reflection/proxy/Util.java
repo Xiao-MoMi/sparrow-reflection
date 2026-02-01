@@ -46,6 +46,7 @@ final class Util {
         return getProxiedClass(clazz, proxy);
     }
 
+    @SuppressWarnings("DuplicatedCode")
     @Nullable
     private static Class<?> getProxiedClass(Class<?> clazz, ReflectionProxy proxy) {
         if (proxy.clazz() == Object.class && proxy.name().isEmpty() && proxy.names().length == 0) {
@@ -55,9 +56,17 @@ final class Util {
             return proxy.clazz();
         }
         if (!proxy.name().isEmpty()) {
-            return SparrowClass.find(proxy.name());
+            if (proxy.relocate()) {
+                return SparrowClass.find(proxy.name().replace("{}", "."));
+            } else {
+                return SparrowClass.find(proxy.name());
+            }
         }
-        return SparrowClass.find(proxy.names());
+        if (proxy.relocate()) {
+            return SparrowClass.find(Arrays.stream(proxy.names()).map(it -> it.replace("{}", ".")).toArray(String[]::new));
+        } else {
+            return SparrowClass.find(proxy.names());
+        }
     }
 
     public static void checkArgumentCount(Method method, int expected) {
@@ -67,6 +76,7 @@ final class Util {
         }
     }
 
+    @SuppressWarnings("DuplicatedCode")
     public static Class<?> getParameterClass(Parameter parameter) {
         Type type = parameter.getDeclaredAnnotation(Type.class);
         if (type == null) {
@@ -79,9 +89,17 @@ final class Util {
             return getProxiedClass(type.clazz());
         }
         if (!type.name().isEmpty()) {
-            return SparrowClass.find(type.name());
+            if (type.relocate()) {
+                return SparrowClass.find(type.name().replace("{}", "."));
+            } else {
+                return SparrowClass.find(type.name());
+            }
         }
-        return SparrowClass.find(type.names());
+        if (type.relocate()) {
+            return SparrowClass.find(Arrays.stream(type.names()).map(it -> it.replace("{}", ".")).toArray(String[]::new));
+        } else {
+            return SparrowClass.find(type.names());
+        }
     }
 
     @SuppressWarnings("DuplicatedCode")
