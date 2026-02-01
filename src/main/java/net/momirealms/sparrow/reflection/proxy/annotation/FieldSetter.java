@@ -18,4 +18,6 @@ public @interface FieldSetter {
     Strategy strategy() default Strategy.ASM;
 
     boolean isStatic() default false;
+
+    String version() default "";
 }

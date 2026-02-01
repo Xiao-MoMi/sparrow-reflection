@@ -16,4 +16,6 @@ public @interface ReflectionProxy {
     String[] names() default {};
 
     boolean relocate() default false;
+
+    String version() default "";
 }

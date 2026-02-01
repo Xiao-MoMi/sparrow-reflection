@@ -14,4 +14,6 @@ public @interface MethodInvoker {
     String[] names() default {};
 
     boolean isStatic() default false;
+
+    String version() default "";
 }

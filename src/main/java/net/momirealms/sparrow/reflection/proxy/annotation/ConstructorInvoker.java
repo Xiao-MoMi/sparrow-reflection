@@ -12,4 +12,6 @@ import java.lang.annotation.Target;
 public @interface ConstructorInvoker {
 
     Strategy strategy() default Strategy.ASM;
+
+    String version() default "";
 }

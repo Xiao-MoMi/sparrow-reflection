@@ -2,6 +2,7 @@ package net.momirealms.sparrow.reflection;
 
 import net.momirealms.sparrow.reflection.exception.SparrowReflectionException;
 import net.momirealms.sparrow.reflection.remapper.Remapper;
+import net.momirealms.sparrow.reflection.util.VersionPredicate;
 import org.jetbrains.annotations.NotNull;
 import sun.misc.Unsafe;
 
@@ -13,6 +14,8 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Objects;
+import java.util.function.Function;
+import java.util.function.Predicate;
 
 public final class SReflection {
     private static final String YOU_SHOULD_RELOCATE_THIS = "net{}momirealms{}sparrow{}reflection";
@@ -66,6 +69,7 @@ public final class SReflection {
 
     private static String PREFIX = "Sparrow";
     private static Remapper REMAPPER = Remapper.noOp();
+    private static VersionPredicate VERSION_MATCHER = s -> true;
 
     private SReflection() {}
 
@@ -77,6 +81,10 @@ public final class SReflection {
         SReflection.REMAPPER = Objects.requireNonNull(remapper);
     }
 
+    public static void setVersionMatcher(@NotNull VersionPredicate versionMatcher) {
+        SReflection.VERSION_MATCHER = Objects.requireNonNull(versionMatcher);
+    }
+
     @NotNull
     public static Remapper getRemapper() {
         return SReflection.REMAPPER;
@@ -85,6 +93,11 @@ public final class SReflection {
     @NotNull
     public static String getAsmClassPrefix() {
         return SReflection.PREFIX;
+    }
+
+    @NotNull
+    public static VersionPredicate getVersionMatcher() {
+        return SReflection.VERSION_MATCHER;
     }
 
     @NotNull

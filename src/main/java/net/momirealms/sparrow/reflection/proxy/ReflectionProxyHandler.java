@@ -1,5 +1,6 @@
 package net.momirealms.sparrow.reflection.proxy;
 
+import net.momirealms.sparrow.reflection.SReflection;
 import net.momirealms.sparrow.reflection.clazz.SparrowClass;
 import net.momirealms.sparrow.reflection.constructor.SConstructor;
 import net.momirealms.sparrow.reflection.constructor.SparrowConstructor;
@@ -34,22 +35,14 @@ final class ReflectionProxyHandler<I> implements InvocationHandler {
     }
 
     private void analyse() {
-        Class<?> previousTarget = null;
-        Class<?> previousProxy = null;
         // 获取全部父接口的方法
         for (Class<?> proxyClazz : Util.getTopDownInterfaceHierarchy(this.proxyClass)) {
             Class<?> targetClass = Util.getProxiedClass(proxyClazz);
+            // 版本原因找不到类
             if (targetClass == null) {
-                throw new IllegalArgumentException("Cannot find proxied class for " + proxyClazz);
-            }
-            if (previousTarget != null && !previousTarget.isAssignableFrom(targetClass)) {
-                throw new IllegalArgumentException("Incompatible class found. " +
-                        "Proxied class: " + targetClass + " and " + previousTarget + "; " +
-                        "Proxy class: " + proxyClazz + " and " + previousProxy);
+                continue;
             }
             this.analyse(proxyClazz, targetClass);
-            previousProxy = proxyClazz;
-            previousTarget = targetClass;
         }
     }
 
@@ -59,7 +52,7 @@ final class ReflectionProxyHandler<I> implements InvocationHandler {
 
             // 构造器
             ConstructorInvoker constructorInvoker = method.getAnnotation(ConstructorInvoker.class);
-            if (constructorInvoker != null) {
+            if (constructorInvoker != null && SReflection.getVersionMatcher().test(constructorInvoker.version())) {
                 // 构造器只需要 参数 即可确定
                 Class<?>[] parameterTypes = Arrays.stream(method.getParameters())
                         .map(Util::getParameterClass)
@@ -74,7 +67,7 @@ final class ReflectionProxyHandler<I> implements InvocationHandler {
 
             // 字段获取
             FieldGetter fieldGetter = method.getAnnotation(FieldGetter.class);
-            if (fieldGetter != null) {
+            if (fieldGetter != null && SReflection.getVersionMatcher().test(fieldGetter.version())) {
                 // 字段只需 名称 即可确定
                 SparrowField spaField = spaClass.getDeclaredSparrowField(Util.getFieldMatcher(fieldGetter));
                 Objects.requireNonNull(spaField, "Field not found for proxy class " + proxyClass + "#" + method.getName());
@@ -90,7 +83,7 @@ final class ReflectionProxyHandler<I> implements InvocationHandler {
 
             // 字段设置
             FieldSetter fieldSetter = method.getAnnotation(FieldSetter.class);
-            if (fieldSetter != null) {
+            if (fieldSetter != null && SReflection.getVersionMatcher().test(fieldSetter.version())) {
                 SparrowField spaField = spaClass.getDeclaredSparrowField(Util.getFieldMatcher(fieldSetter));
                 Objects.requireNonNull(spaField, "Field not found for proxy class " + proxyClass + "#" + method.getName());
                 if (fieldSetter.isStatic()) {
@@ -105,7 +98,7 @@ final class ReflectionProxyHandler<I> implements InvocationHandler {
 
             // 方法调用
             MethodInvoker methodInvoker = method.getAnnotation(MethodInvoker.class);
-            if (methodInvoker != null) {
+            if (methodInvoker != null && SReflection.getVersionMatcher().test(methodInvoker.version())) {
                 Class<?>[] parameterTypes = Arrays.stream(method.getParameters())
                             .skip(methodInvoker.isStatic() ? 0 : 1)
                             .map(Util::getParameterClass)

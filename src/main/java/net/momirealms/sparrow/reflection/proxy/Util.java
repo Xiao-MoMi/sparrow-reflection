@@ -1,5 +1,6 @@
 package net.momirealms.sparrow.reflection.proxy;
 
+import net.momirealms.sparrow.reflection.SReflection;
 import net.momirealms.sparrow.reflection.clazz.SparrowClass;
 import net.momirealms.sparrow.reflection.field.matcher.FieldMatcher;
 import net.momirealms.sparrow.reflection.method.matcher.MethodMatcher;
@@ -43,7 +44,11 @@ final class Util {
         if (proxy == null) {
             throw new IllegalArgumentException("Class " + clazz + " has no @ReflectionProxy annotation");
         }
-        return getProxiedClass(clazz, proxy);
+        if (SReflection.getVersionMatcher().test(proxy.version())) {
+            return Objects.requireNonNull(getProxiedClass(clazz, proxy), "Cannot find proxied class for " + clazz);
+        } else {
+            return null;
+        }
     }
 
     @SuppressWarnings("DuplicatedCode")

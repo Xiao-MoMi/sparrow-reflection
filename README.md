@@ -219,10 +219,10 @@ public class ProxyExample {
         @ConstructorInvoker
         Object newInstance(UUID uuid, String name, @Type(clazz = ServerLevelProxy.class) Object level /* 对于不可访问的类使用 Type 注解 */);
 
-        @FieldSetter(name = "uuid", strategy = Strategy.MH)
+        @FieldSetter(name = "uuid", strategy = Strategy.MH, version = "1.20.1~1.20.4")
         void setUUID(Object player, UUID uuid);
 
-        @FieldGetter(name = "uuid")
+        @FieldGetter(name = "uuid", version = ">=1.21.2")
         UUID getUUID(Object player);
     }
 
@@ -232,6 +232,11 @@ public class ProxyExample {
 
         @MethodInvoker(names = {"setTime", "setTimeNow"})
         int setTime(Object serverLevel, int time);
+    }
+
+    // 对于可能会因为 relocate 改变位置的类, 标记 relocation = true 且使用 '{}' 替代 '.'
+    @ReflectionProxy(name = "net{}kyori{}adventure{}text{}Component", relocation = true)
+    public interface ComponentProxy {
     }
 }
 ```
