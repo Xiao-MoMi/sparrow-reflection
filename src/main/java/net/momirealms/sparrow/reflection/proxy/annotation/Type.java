@@ -15,5 +15,5 @@ public @interface Type {
 
     String[] names() default {};
 
-    boolean relocate() default false;
+    boolean ignoreRelocation() default false;
 }

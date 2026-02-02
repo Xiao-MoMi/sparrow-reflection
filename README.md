@@ -234,8 +234,8 @@ public class ProxyExample {
         int setTime(Object serverLevel, int time);
     }
 
-    // 对于可能会因为 relocate 改变位置的类, 标记 relocation = true 且使用 '{}' 替代 '.'
-    @ReflectionProxy(name = "net{}kyori{}adventure{}text{}Component", relocation = true)
+    // 对于可能会因为 relocate 改变位置的类, 标记 ignoreRelocation = true 且使用 '{}' 替代 '.'
+    @ReflectionProxy(name = "net{}kyori{}adventure{}text{}Component", ignoreRelocation = true)
     public interface ComponentProxy {
     }
 }

@@ -61,13 +61,13 @@ final class Util {
             return proxy.clazz();
         }
         if (!proxy.name().isEmpty()) {
-            if (proxy.relocate()) {
+            if (proxy.ignoreRelocation()) {
                 return SparrowClass.find(proxy.name().replace("{}", "."));
             } else {
                 return SparrowClass.find(proxy.name());
             }
         }
-        if (proxy.relocate()) {
+        if (proxy.ignoreRelocation()) {
             return SparrowClass.find(Arrays.stream(proxy.names()).map(it -> it.replace("{}", ".")).toArray(String[]::new));
         } else {
             return SparrowClass.find(proxy.names());
@@ -94,13 +94,13 @@ final class Util {
             return getProxiedClass(type.clazz());
         }
         if (!type.name().isEmpty()) {
-            if (type.relocate()) {
+            if (type.ignoreRelocation()) {
                 return SparrowClass.find(type.name().replace("{}", "."));
             } else {
                 return SparrowClass.find(type.name());
             }
         }
-        if (type.relocate()) {
+        if (type.ignoreRelocation()) {
             return SparrowClass.find(Arrays.stream(type.names()).map(it -> it.replace("{}", ".")).toArray(String[]::new));
         } else {
             return SparrowClass.find(type.names());
