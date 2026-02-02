@@ -103,7 +103,7 @@ final class ReflectionProxyHandler<I> implements InvocationHandler {
                             .skip(methodInvoker.isStatic() ? 0 : 1)
                             .map(Util::getParameterClass)
                             .toArray(Class<?>[]::new);
-                // 方块只需要 参数 + 名称，即可确定唯一方法
+                // 方法只需要 参数 + 名称，即可确定唯一方法
                 SparrowMethod spaMethod = spaClass.getDeclaredSparrowMethod(Util.createMethodMatcher(methodInvoker).and(MethodMatcher.takeArguments(parameterTypes)));
                 Objects.requireNonNull(spaMethod, "Method not found for proxy class " + proxyClass + "#" + method.getName());
                 if (methodInvoker.isStatic()) {

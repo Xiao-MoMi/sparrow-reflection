@@ -31,14 +31,6 @@ final class Util {
         }
     }
 
-    public static Class<?> getProxiedClassOrNull(Class<?> clazz) {
-        ReflectionProxy proxy = clazz.getDeclaredAnnotation(ReflectionProxy.class);
-        if (proxy == null) {
-            return clazz;
-        }
-        return getProxiedClass(clazz, proxy);
-    }
-
     public static Class<?> getProxiedClass(Class<?> clazz) {
         ReflectionProxy proxy = clazz.getDeclaredAnnotation(ReflectionProxy.class);
         if (proxy == null) {
