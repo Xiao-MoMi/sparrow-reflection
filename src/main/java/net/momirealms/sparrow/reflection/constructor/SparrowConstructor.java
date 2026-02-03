@@ -126,8 +126,4 @@ public final class SparrowConstructor<T> {
             throw new SparrowReflectionException("Failed to create SConstructor10 invoker", e);
         }
     }
-
-    public SConstructor unsafe() {
-        return new UnsafeConstructor(this.constructor);
-    }
 }

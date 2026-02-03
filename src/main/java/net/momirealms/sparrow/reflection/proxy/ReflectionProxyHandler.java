@@ -2,6 +2,7 @@ package net.momirealms.sparrow.reflection.proxy;
 
 import net.momirealms.sparrow.reflection.SReflection;
 import net.momirealms.sparrow.reflection.clazz.SparrowClass;
+import net.momirealms.sparrow.reflection.constructor.UnsafeConstructor;
 import net.momirealms.sparrow.reflection.constructor.SConstructor;
 import net.momirealms.sparrow.reflection.constructor.SparrowConstructor;
 import net.momirealms.sparrow.reflection.constructor.matcher.ConstructorMatcher;
@@ -53,15 +54,17 @@ final class ReflectionProxyHandler<I> implements InvocationHandler {
             // 构造器
             ConstructorInvoker constructorInvoker = method.getAnnotation(ConstructorInvoker.class);
             if (constructorInvoker != null && SReflection.getVersionMatcher().test(constructorInvoker.version())) {
-                // 构造器只需要 参数 即可确定
-                Class<?>[] parameterTypes = Arrays.stream(method.getParameters())
-                        .map(Util::getParameterClass)
-                        .toArray(Class<?>[]::new);
-                SparrowConstructor<?> spaConstructor = spaClass.getDeclaredSparrowConstructor(ConstructorMatcher.takeArguments(parameterTypes));
-                Objects.requireNonNull(spaConstructor, "Constructor not found for proxy class " + proxyClass + "#" + method.getName());
-                this.consumers.put(method, new ConstructorInvokerConsumer(
-                        constructorInvoker.strategy() == Strategy.ASM ? spaConstructor.asm() : spaConstructor.unsafe()
-                ));
+                if (constructorInvoker.strategy() == Strategy.UNSAFE) {
+                    this.consumers.put(method, new UnsafeConstructorInvoker(spaClass.unsafeConstructor()));
+                } else {
+                    // 构造器只需要 参数 即可确定
+                    Class<?>[] parameterTypes = Arrays.stream(method.getParameters())
+                            .map(Util::getParameterClass)
+                            .toArray(Class<?>[]::new);
+                    SparrowConstructor<?> spaConstructor = spaClass.getDeclaredSparrowConstructor(ConstructorMatcher.takeArguments(parameterTypes));
+                    Objects.requireNonNull(spaConstructor, "Constructor not found for proxy class " + proxyClass + "#" + method.getName());
+                    this.consumers.put(method, new ConstructorInvokerConsumer(spaConstructor.asm()));
+                }
                 continue;
             }
 
@@ -182,6 +185,14 @@ final class ReflectionProxyHandler<I> implements InvocationHandler {
             Object[] realArgs = new Object[args.length - 1];
             System.arraycopy(args, 1, realArgs, 0, realArgs.length);
             return this.sMethod.invoke(args[0], realArgs);
+        }
+    }
+
+    private record UnsafeConstructorInvoker(UnsafeConstructor unsafeConstructor) implements ArgumentsConsumer {
+
+        @Override
+        public Object apply(Object[] objects) {
+            return this.unsafeConstructor.newInstance();
         }
     }
 

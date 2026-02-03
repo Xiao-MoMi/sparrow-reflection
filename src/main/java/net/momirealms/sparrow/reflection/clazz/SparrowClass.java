@@ -2,6 +2,7 @@ package net.momirealms.sparrow.reflection.clazz;
 
 import net.momirealms.sparrow.reflection.SReflection;
 import net.momirealms.sparrow.reflection.constructor.SparrowConstructor;
+import net.momirealms.sparrow.reflection.constructor.UnsafeConstructor;
 import net.momirealms.sparrow.reflection.constructor.matcher.ConstructorMatcher;
 import net.momirealms.sparrow.reflection.field.SparrowField;
 import net.momirealms.sparrow.reflection.field.matcher.FieldMatcher;
@@ -220,6 +221,11 @@ public final class SparrowClass<T> {
     constructors
 
      */
+
+    @NotNull
+    public UnsafeConstructor unsafeConstructor() {
+        return new UnsafeConstructor(this.clazz);
+    }
 
     @Nullable
     @SuppressWarnings("unchecked")

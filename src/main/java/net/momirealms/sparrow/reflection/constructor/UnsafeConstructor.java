@@ -3,17 +3,14 @@ package net.momirealms.sparrow.reflection.constructor;
 import net.momirealms.sparrow.reflection.SReflection;
 import net.momirealms.sparrow.reflection.exception.SparrowReflectionException;
 
-import java.lang.reflect.Constructor;
-
-final class UnsafeConstructor extends SConstructor {
+public final class UnsafeConstructor {
     private final Class<?> clazz;
 
-    UnsafeConstructor(Constructor<?> constructor) {
-        this.clazz = constructor.getDeclaringClass();
+    public UnsafeConstructor(Class<?> clazz) {
+        this.clazz = clazz;
     }
 
-    @Override
-    public Object newInstance(Object... args) {
+    public Object newInstance() {
         try {
             return SReflection.UNSAFE.allocateInstance(this.clazz);
         } catch (InstantiationException e) {
