@@ -1,4 +1,4 @@
-## 引入此依赖
+## Gradle Configuration
 
 ```kotlin
 repositories {
@@ -8,18 +8,37 @@ repositories {
 ```
 ```kotlin
 dependencies {
-    // 必要的 asm 依赖，保持最新版本
+    // Required ASM dependency (keep updated to latest version)
     implementation("org.ow2.asm:asm:9.9")
-    // 版本号可在 build.gradle.kts 查看
+    // Check build.gradle.kts for the latest version
     implementation("net.momirealms:sparrow-reflection:{VERSION}")
 }
 
 tasks {
-    // 请务必 relocate 此依赖
+    // Important: Always relocate the package to avoid conflicts:
     shadowJar {
         relocate("net.momirealms.sparrow.reflection", "your.domain.libs.reflection")
     }
 }
 ```
 
-## 使用示例
+## Usage Example
+
+```java
+@ReflectionProxy(name = "net.minecraft.server.level.ServerPlayer")
+public interface ServerPlayerProxy extends PlayerProxy {
+    ServerPlayerProxy INSTANCE = ASMProxyFactory.create(ServerPlayerProxy.class);
+
+    @FieldGetter(name = "chunkLoader")
+    Object chunkLoader(Object instance);
+
+    @FieldSetter(name = "chunkLoader")
+    void chunkLoader(Object instance, Object chunkLoader);
+
+    @MethodInvoker(name = "nextContainerCounter")
+    int nextContainerCounter(Object instance);
+
+    @MethodInvoker(name = "initMenu")
+    void initMenu(Object instance, @Type(clazz = AbstractContainerMenuProxy.class) Object menu);
+}
+```
