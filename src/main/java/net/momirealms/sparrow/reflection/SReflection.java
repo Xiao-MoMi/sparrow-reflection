@@ -16,8 +16,6 @@ import java.util.Objects;
 import java.util.function.Predicate;
 
 public final class SReflection {
-    private static final String YOU_SHOULD_RELOCATE_THIS = "net{}momirealms{}sparrow{}reflection";
-    private static final boolean TEST_ENVIRONMENT = false;
     public static final Unsafe UNSAFE;
     public static final MethodHandles.Lookup LOOKUP;
     private static final MethodHandle method$MethodHandleNatives$refKindIsSetter;
@@ -31,9 +29,6 @@ public final class SReflection {
 
     static {
         try {
-            if (!TEST_ENVIRONMENT) {
-                checkRelocation();
-            }
             Field unsafeField = Unsafe.class.getDeclaredField("theUnsafe");
             unsafeField.setAccessible(true);
             UNSAFE = (Unsafe) unsafeField.get(null);
@@ -55,13 +50,6 @@ public final class SReflection {
             method$ClassDefiner$defineClass = Objects.requireNonNull(SReflection.unreflectMethod(clazz$ClassDefiner.getDeclaredMethod("defineClass", boolean.class)));
         } catch (Throwable e) {
             throw new SparrowReflectionException("Failed to init Reflection", e);
-        }
-    }
-
-    @SuppressWarnings("all")
-    private static void checkRelocation() {
-        if (SReflection.class.getName().startsWith(YOU_SHOULD_RELOCATE_THIS.replace("{}", "."))) {
-            throw new SparrowReflectionException("You should relocate sparrow reflection");
         }
     }
 
