@@ -9,7 +9,7 @@ repositories {
 ```kotlin
 dependencies {
     // Required ASM dependency (keep updated to latest version)
-    implementation("org.ow2.asm:asm:9.9")
+    implementation("org.ow2.asm:asm:9.9.1")
     // Check build.gradle.kts for the latest version
     implementation("net.momirealms:sparrow-reflection:{VERSION}")
 }

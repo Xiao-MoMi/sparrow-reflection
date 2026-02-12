@@ -194,7 +194,6 @@ final class AsmProxyBuilder implements ProxyBuilder, Opcodes {
 
         Class<?> owner = targetMethod.getDeclaringClass();
         Class<?>[] targetParamTypes = targetMethod.getParameterTypes();
-        Class<?> targetReturnType = targetMethod.getReturnType();
         boolean isStaticTarget = Modifier.isStatic(targetMethod.getModifiers());
 
         if (!isStaticTarget) {
@@ -222,25 +221,52 @@ final class AsmProxyBuilder implements ProxyBuilder, Opcodes {
                 owner.isInterface()
         );
 
-        Class<?> proxyReturnType = proxyMethod.getReturnType();
-        if (targetReturnType == void.class) {
-            if (proxyReturnType != void.class) {
+        writeReturn(mv, proxyMethod, targetMethod);
+
+        mv.visitMaxs(0, 0);
+        mv.visitEnd();
+    }
+
+    private void writeReturn(MethodVisitor mv, Method proxyMethod, Method targetMethod) {
+        Class<?> targetRet = targetMethod.getReturnType();
+        Class<?> proxyRet = proxyMethod.getReturnType();
+
+        if (targetRet == void.class) {
+            if (proxyRet != void.class) {
                 mv.visitInsn(ACONST_NULL);
                 mv.visitInsn(ARETURN);
             } else {
                 mv.visitInsn(RETURN);
             }
-        } else {
-            if (targetReturnType.isPrimitive() && !proxyReturnType.isPrimitive()) {
-                AsmUtils.box(mv, Type.getDescriptor(targetReturnType));
-                mv.visitInsn(ARETURN);
-            } else {
-                mv.visitInsn(Type.getType(proxyReturnType).getOpcode(IRETURN));
-            }
+            return;
         }
 
-        mv.visitMaxs(0, 0);
-        mv.visitEnd();
+        if (targetRet.isPrimitive()) {
+            if (!proxyRet.isPrimitive()) {
+                // 基本 -> 包装 (装箱)
+                AsmUtils.box(mv, Type.getDescriptor(targetRet));
+                mv.visitInsn(ARETURN);
+            } else {
+                // 基本 -> 基本
+                if (targetRet != proxyRet) {
+                    throw new IllegalArgumentException("Primitive mismatch: " + targetRet + " to " + proxyRet);
+                }
+                mv.visitInsn(Type.getType(proxyRet).getOpcode(IRETURN));
+            }
+        }
+        else {
+            if (proxyRet.isPrimitive()) {
+                // 对象 -> 基本 (拆箱)
+                AsmUtils.unboxAndCast(mv, Type.getDescriptor(proxyRet));
+                mv.visitInsn(Type.getType(proxyRet).getOpcode(IRETURN));
+            } else {
+                // 对象 -> 对象
+                if (!proxyRet.isAssignableFrom(targetRet)) {
+                    mv.visitTypeInsn(CHECKCAST, Type.getInternalName(proxyRet));
+                }
+                mv.visitInsn(ARETURN);
+            }
+        }
     }
 
     @Override
