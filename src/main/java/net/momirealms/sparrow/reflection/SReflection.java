@@ -22,10 +22,6 @@ public final class SReflection {
     private static final MethodHandle constructor$MemberName;
     private static final MethodHandle method$MemberName$getReferenceKind;
     private static final MethodHandle method$MethodHandles$Lookup$getDirectField;
-    private static final MethodHandle methodHandle$ClassFile$readClassFile;
-    private static final Object instance$defaultDumper;
-    private static final MethodHandle constructor$ClassDefiner;
-    private static final MethodHandle method$ClassDefiner$defineClass;
 
     static {
         try {
@@ -33,8 +29,8 @@ public final class SReflection {
             unsafeField.setAccessible(true);
             UNSAFE = (Unsafe) unsafeField.get(null);
             Field implLookup = MethodHandles.Lookup.class.getDeclaredField("IMPL_LOOKUP");
-            @SuppressWarnings("deprecation") Object base = UNSAFE.staticFieldBase(implLookup);
-            @SuppressWarnings("deprecation") long offset = UNSAFE.staticFieldOffset(implLookup);
+            Object base = UNSAFE.staticFieldBase(implLookup);
+            long offset = UNSAFE.staticFieldOffset(implLookup);
             LOOKUP = (MethodHandles.Lookup) UNSAFE.getObject(base, offset); // 获取神权lookup
             Class<?> clazz$MethodHandleNatives = Class.forName("java.lang.invoke.MethodHandleNatives");
             Class<?> clazz$MemberName = Class.forName("java.lang.invoke.MemberName");
@@ -42,12 +38,6 @@ public final class SReflection {
             constructor$MemberName = LOOKUP.unreflectConstructor(clazz$MemberName.getDeclaredConstructor(Field.class, boolean.class));
             method$MemberName$getReferenceKind = LOOKUP.unreflect(clazz$MemberName.getDeclaredMethod("getReferenceKind"));
             method$MethodHandles$Lookup$getDirectField = LOOKUP.unreflect(MethodHandles.Lookup.class.getDeclaredMethod("getDirectField", byte.class, Class.class, clazz$MemberName));
-            Class<?> clazz$ClassFile = Class.forName("java.lang.invoke.MethodHandles$Lookup$ClassFile");
-            methodHandle$ClassFile$readClassFile = Objects.requireNonNull(SReflection.unreflectMethod(clazz$ClassFile.getDeclaredMethod("readClassFile", byte[].class)));
-            instance$defaultDumper = Objects.requireNonNull(SReflection.unreflectMethod(MethodHandles.Lookup.class.getDeclaredMethod("defaultDumper"))).invoke();
-            Class<?> clazz$ClassDefiner = Class.forName("java.lang.invoke.MethodHandles$Lookup$ClassDefiner");
-            constructor$ClassDefiner = Objects.requireNonNull(SReflection.unreflectConstructor(clazz$ClassDefiner.getDeclaredConstructors()[0]));
-            method$ClassDefiner$defineClass = Objects.requireNonNull(SReflection.unreflectMethod(clazz$ClassDefiner.getDeclaredMethod("defineClass", boolean.class)));
         } catch (Throwable e) {
             throw new SparrowReflectionException("Failed to init Reflection", e);
         }
@@ -137,11 +127,5 @@ public final class SReflection {
         } catch (IllegalAccessException e) {
             return null;
         }
-    }
-
-    public static Class<?> defineClass(@NotNull final MethodHandles.Lookup lookup, final byte[] bytes) throws Throwable {
-        Object classFile = methodHandle$ClassFile$readClassFile.invoke(bytes);
-        Object classDefiner = constructor$ClassDefiner.invoke(lookup, classFile, /* STRONG_LOADER_LINK */ 4, instance$defaultDumper);
-        return (Class<?>) method$ClassDefiner$defineClass.invoke(classDefiner, true);
     }
 }
