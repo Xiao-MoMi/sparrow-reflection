@@ -15,5 +15,7 @@ public @interface ReflectionProxy {
 
     boolean ignoreRelocation() default false;
 
+    boolean nullable() default false;
+
     String activeIf() default "";
 }

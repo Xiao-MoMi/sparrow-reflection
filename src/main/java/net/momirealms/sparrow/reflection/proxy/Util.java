@@ -123,7 +123,11 @@ final class Util implements Opcodes {
             throw new IllegalArgumentException("Class " + clazz + " has no @ReflectionProxy annotation");
         }
         if (SReflection.getFilter().test(proxy.activeIf())) {
-            return Objects.requireNonNull(getProxiedClass(clazz, proxy), "Cannot find proxied class for " + clazz);
+            Class<?> proxiedClass = getProxiedClass(clazz, proxy);
+            if (proxy.nullable()) {
+                return proxiedClass;
+            }
+            return Objects.requireNonNull(proxiedClass, "Cannot find proxied class for " + clazz);
         } else {
             return null;
         }
