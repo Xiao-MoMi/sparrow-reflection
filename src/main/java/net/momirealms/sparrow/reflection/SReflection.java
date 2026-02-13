@@ -82,6 +82,15 @@ public final class SReflection {
         return o;
     }
 
+    @SuppressWarnings("unchecked")
+    public static <T> T allocateInstance(Class<T> clazz) {
+        try {
+            return (T) UNSAFE.allocateInstance(clazz);
+        } catch (InstantiationException e) {
+            return null;
+        }
+    }
+
     public static VarHandle unreflectVarHandle(@NotNull final Field field) {
         try {
             return LOOKUP.unreflectVarHandle(field);
