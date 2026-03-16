@@ -23,7 +23,7 @@ final class ShortFieldAccessorFactory implements Opcodes {
         String fieldName = field.getName();
         boolean isStatic = Modifier.isStatic(field.getModifiers());
 
-        String internalClassName = Type.getInternalName(owner) + "$" + SReflection.getAsmClassPrefix() + "Field_" + fieldName;
+        String internalClassName = Type.getInternalName(owner) + "$" + SReflection.getAsmClassPrefix() + "Field_" + fieldName + "_" + SReflection.nextClassId();
 
         byte[] bytes = generateByteCode(internalClassName, owner, fieldName, isStatic);
 

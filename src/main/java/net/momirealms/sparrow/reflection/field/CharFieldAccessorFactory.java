@@ -22,7 +22,7 @@ final class CharFieldAccessorFactory implements Opcodes {
         Class<?> owner = field.getDeclaringClass();
         String fieldName = field.getName();
         boolean isStatic = Modifier.isStatic(field.getModifiers());
-        String internalClassName = Type.getInternalName(owner) + "$" + SReflection.getAsmClassPrefix() + "Field_" + fieldName;
+        String internalClassName = Type.getInternalName(owner) + "$" + SReflection.getAsmClassPrefix() + "Field_" + fieldName + "_" + SReflection.nextClassId();
         byte[] bytes = generateByteCode(internalClassName, owner, fieldName, isStatic);
         MethodHandles.Lookup lookup = MethodHandles.privateLookupIn(owner, SReflection.LOOKUP);
         MethodHandles.Lookup hiddenLookup = lookup.defineHiddenClass(bytes, true, MethodHandles.Lookup.ClassOption.NESTMATE);

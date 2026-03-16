@@ -13,6 +13,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Predicate;
 
 public final class SReflection {
@@ -22,6 +23,7 @@ public final class SReflection {
     private static final MethodHandle constructor$MemberName;
     private static final MethodHandle method$MemberName$getReferenceKind;
     private static final MethodHandle method$MethodHandles$Lookup$getDirectField;
+    private static final AtomicLong CLASS_ID = new AtomicLong();
 
     static {
         try {
@@ -74,6 +76,10 @@ public final class SReflection {
     @NotNull
     public static Predicate<String> getFilter() {
         return SReflection.ACTIVE_PREDICATE;
+    }
+
+    public static long nextClassId() {
+        return CLASS_ID.getAndIncrement();
     }
 
     @NotNull

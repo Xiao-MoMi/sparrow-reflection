@@ -26,7 +26,7 @@ final class OptimizedConstructorInvokerFactory implements Opcodes {
         Class<?>[] parameterTypes = constructor.getParameterTypes();
 
         Class<?> targetAbstractClass = ABSTRACT_CLASSES[parameterTypes.length];
-        String internalClassName = Type.getInternalName(owner) + "$" + SReflection.getAsmClassPrefix() + "Constructor";
+        String internalClassName = Type.getInternalName(owner) + "$" + SReflection.getAsmClassPrefix() + "Constructor_" + SReflection.nextClassId();
 
         byte[] bytes = generateByteCode(
                 internalClassName,
@@ -61,13 +61,9 @@ final class OptimizedConstructorInvokerFactory implements Opcodes {
         mv.visitMaxs(0, 0);
         mv.visitEnd();
 
-        StringBuilder interfaceDesc = new StringBuilder("(");
-        for (int i = 0; i < params.length; i++) {
-            interfaceDesc.append("Ljava/lang/Object;");
-        }
-        interfaceDesc.append(")Ljava/lang/Object;");
+        String interfaceDesc = "(" + "Ljava/lang/Object;".repeat(params.length) + ")Ljava/lang/Object;";
 
-        mv = cw.visitMethod(ACC_PUBLIC, "newInstance", interfaceDesc.toString(), null, null);
+        mv = cw.visitMethod(ACC_PUBLIC, "newInstance", interfaceDesc, null, null);
         mv.visitCode();
 
         String ownerInternalName = Type.getInternalName(owner);

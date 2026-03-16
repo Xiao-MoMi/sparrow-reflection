@@ -25,7 +25,7 @@ final class Util implements Opcodes {
         List<Class<?>> interfaces = Util.getChildFirstHierarchy(proxy);
         Class<?> targetClass = Util.getProxiedClass(proxy);
         if (targetClass == null) return null;
-        String internalClassName = org.objectweb.asm.Type.getInternalName(targetClass) + "$Proxy";
+        String internalClassName = org.objectweb.asm.Type.getInternalName(targetClass) + "$" + SReflection.getAsmClassPrefix() + "Proxy_" + SReflection.nextClassId();
         ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
         cw.visit(V17, ACC_PUBLIC | ACC_FINAL, internalClassName, null, "java/lang/Object", new String[]{org.objectweb.asm.Type.getInternalName(proxy)});
 
