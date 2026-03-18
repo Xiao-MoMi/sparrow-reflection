@@ -18,7 +18,6 @@ import java.util.function.Predicate;
 public final class SReflection {
     public static final Unsafe UNSAFE;
     public static final MethodHandles.Lookup LOOKUP;
-    private static final MethodHandle method$MethodHandleNatives$refKindIsSetter;
     private static final MethodHandle constructor$MemberName;
     private static final MethodHandle method$MemberName$getReferenceKind;
     private static final MethodHandle method$MethodHandles$Lookup$getDirectField;
@@ -29,12 +28,9 @@ public final class SReflection {
             unsafeField.setAccessible(true);
             UNSAFE = (Unsafe) unsafeField.get(null);
             Field implLookup = MethodHandles.Lookup.class.getDeclaredField("IMPL_LOOKUP");
-            Object base = UNSAFE.staticFieldBase(implLookup);
             long offset = UNSAFE.staticFieldOffset(implLookup);
-            LOOKUP = (MethodHandles.Lookup) UNSAFE.getObject(base, offset); // 获取神权lookup
-            Class<?> clazz$MethodHandleNatives = Class.forName("java.lang.invoke.MethodHandleNatives");
+            LOOKUP = (MethodHandles.Lookup) UNSAFE.getObject(MethodHandles.Lookup.class, offset); // 获取神权lookup
             Class<?> clazz$MemberName = Class.forName("java.lang.invoke.MemberName");
-            method$MethodHandleNatives$refKindIsSetter = LOOKUP.unreflect(clazz$MethodHandleNatives.getDeclaredMethod("refKindIsSetter", byte.class));
             constructor$MemberName = LOOKUP.unreflectConstructor(clazz$MemberName.getDeclaredConstructor(Field.class, boolean.class));
             method$MemberName$getReferenceKind = LOOKUP.unreflect(clazz$MemberName.getDeclaredMethod("getReferenceKind"));
             method$MethodHandles$Lookup$getDirectField = LOOKUP.unreflect(MethodHandles.Lookup.class.getDeclaredMethod("getDirectField", byte.class, Class.class, clazz$MemberName));
@@ -104,12 +100,11 @@ public final class SReflection {
             return LOOKUP.unreflectSetter(field);
         } catch (IllegalAccessException e) {
             try { // 绕过final限制获取方法句柄
-                Object memberName = constructor$MemberName.invoke(field, true);
+                Object memberName = constructor$MemberName.invoke(field, /*makeSetter*/ true);
                 Object refKind = method$MemberName$getReferenceKind.invoke(memberName);
-                method$MethodHandleNatives$refKindIsSetter.invoke(refKind);
                 return (MethodHandle) method$MethodHandles$Lookup$getDirectField.invoke(LOOKUP, refKind, field.getDeclaringClass(), memberName);
-            } catch (Throwable ex) {
-                return null;
+            } catch (Throwable ex) { // 这里为了确保不是 jdk 差异导致的失败还是抛出错误好点
+                throw new SparrowReflectionException("Failed to unreflect field " + field, ex);
             }
         }
     }
