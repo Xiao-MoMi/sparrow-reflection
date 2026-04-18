@@ -9,13 +9,19 @@ class SparrowProxyPlugin : Plugin<Project> {
 
     override fun apply(project: Project) {
 
-        project.tasks.register("generateProxyMap", ProxyScannerTask::class.java) {
+        val task = project.tasks.register("generateProxyMap", ProxyScannerTask::class.java) {
             val sourceSets = project.extensions.getByType(SourceSetContainer::class.java)
             val mainSourceSet = sourceSets.getByName("main")
             val compileJava = project.tasks.named("compileJava", org.gradle.api.tasks.compile.JavaCompile::class.java)
             classesDirs.from(mainSourceSet.output.classesDirs)
             outputFile.set(project.layout.buildDirectory.file("generated/sparrow/proxy_map.txt"))
             dependsOn(compileJava)
+        }
+
+        project.tasks.named("processResources", org.gradle.language.jvm.tasks.ProcessResources::class.java) {
+            from(task.flatMap { it.outputFile }) {
+                into("META-INF/sparrow")
+            }
         }
     }
 }
