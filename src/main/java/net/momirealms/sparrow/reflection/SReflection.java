@@ -16,20 +16,22 @@ import java.util.Objects;
 import java.util.function.Predicate;
 
 public final class SReflection {
-    public static final Unsafe UNSAFE;
-    public static final MethodHandles.Lookup LOOKUP;
-    private static final MethodHandle constructor$MemberName;
-    private static final MethodHandle method$MemberName$getReferenceKind;
-    private static final MethodHandle method$MethodHandles$Lookup$getDirectField;
+    private static Unsafe UNSAFE;
+    private static MethodHandles.Lookup LOOKUP;
+    private static MethodHandle constructor$MemberName;
+    private static MethodHandle method$MemberName$getReferenceKind;
+    private static MethodHandle method$MethodHandles$Lookup$getDirectField;
 
-    static {
+    public static void init(MethodHandles.Lookup lookup) {
         try {
             Field unsafeField = Unsafe.class.getDeclaredField("theUnsafe");
             unsafeField.setAccessible(true);
             UNSAFE = (Unsafe) unsafeField.get(null);
-            Field implLookup = MethodHandles.Lookup.class.getDeclaredField("IMPL_LOOKUP");
-            long offset = UNSAFE.staticFieldOffset(implLookup);
-            LOOKUP = (MethodHandles.Lookup) UNSAFE.getObject(MethodHandles.Lookup.class, offset); // 获取神权lookup
+            if (lookup == null) {
+                LOOKUP = getLookup(UNSAFE);
+            } else {
+                LOOKUP = lookup;
+            }
             Class<?> clazz$MemberName = Class.forName("java.lang.invoke.MemberName");
             constructor$MemberName = LOOKUP.unreflectConstructor(clazz$MemberName.getDeclaredConstructor(Field.class, boolean.class));
             method$MemberName$getReferenceKind = LOOKUP.unreflect(clazz$MemberName.getDeclaredMethod("getReferenceKind"));
@@ -37,6 +39,13 @@ public final class SReflection {
         } catch (Throwable e) {
             throw new SparrowReflectionException("Failed to init Reflection", e);
         }
+    }
+
+    // 获取神权lookup
+    private static MethodHandles.Lookup getLookup(Unsafe unsafe) throws NoSuchFieldException {
+        Field implLookup = MethodHandles.Lookup.class.getDeclaredField("IMPL_LOOKUP");
+        long offset = unsafe.staticFieldOffset(implLookup);
+        return (MethodHandles.Lookup) unsafe.getObject(MethodHandles.Lookup.class, offset);
     }
 
     private static String PREFIX = "Sparrow";
@@ -81,7 +90,7 @@ public final class SReflection {
     @SuppressWarnings("unchecked")
     public static <T> T allocateInstance(Class<T> clazz) {
         try {
-            return (T) UNSAFE.allocateInstance(clazz);
+            return (T) getUnsafe().allocateInstance(clazz);
         } catch (InstantiationException e) {
             return null;
         }
@@ -89,7 +98,7 @@ public final class SReflection {
 
     public static VarHandle unreflectVarHandle(@NotNull final Field field) {
         try {
-            return LOOKUP.unreflectVarHandle(field);
+            return getLookup().unreflectVarHandle(field);
         } catch (IllegalAccessException e) {
             return null;
         }
@@ -97,7 +106,7 @@ public final class SReflection {
 
     public static MethodHandle unreflectSetter(@NotNull final Field field) {
         try {
-            return LOOKUP.unreflectSetter(field);
+            return getLookup().unreflectSetter(field);
         } catch (IllegalAccessException e) {
             try { // 绕过final限制获取方法句柄
                 Object memberName = constructor$MemberName.invoke(field, /*makeSetter*/ true);
@@ -111,7 +120,7 @@ public final class SReflection {
 
     public static MethodHandle unreflectGetter(@NotNull final Field field) {
         try {
-            return LOOKUP.unreflectGetter(field);
+            return getLookup().unreflectGetter(field);
         } catch (IllegalAccessException e) {
             return null;
         }
@@ -119,7 +128,7 @@ public final class SReflection {
 
     public static MethodHandle unreflectConstructor(@NotNull final Constructor<?> constructor) {
         try {
-            return LOOKUP.unreflectConstructor(constructor);
+            return getLookup().unreflectConstructor(constructor);
         } catch (IllegalAccessException e) {
             return null;
         }
@@ -127,9 +136,19 @@ public final class SReflection {
 
     public static MethodHandle unreflectMethod(@NotNull final Method method) {
         try {
-            return LOOKUP.unreflect(method);
+            return getLookup().unreflect(method);
         } catch (IllegalAccessException e) {
             return null;
         }
+    }
+
+    public static MethodHandles.Lookup getLookup() {
+        if (LOOKUP == null) init(null);
+        return LOOKUP;
+    }
+
+    public static Unsafe getUnsafe() {
+        if (UNSAFE == null) init(null);
+        return UNSAFE;
     }
 }

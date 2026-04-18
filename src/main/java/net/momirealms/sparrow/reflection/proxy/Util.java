@@ -49,7 +49,7 @@ final class Util implements Opcodes {
         cw.visitEnd();
 
         try {
-            MethodHandles.Lookup lookup = MethodHandles.privateLookupIn(targetClass, SReflection.LOOKUP);
+            MethodHandles.Lookup lookup = MethodHandles.privateLookupIn(targetClass, SReflection.getLookup());
             MethodHandles.Lookup hiddenLookup = lookup.defineHiddenClass(cw.toByteArray(), true, MethodHandles.Lookup.ClassOption.NESTMATE);
             Class<?> proxyClass = hiddenLookup.lookupClass();
             int i = 0;

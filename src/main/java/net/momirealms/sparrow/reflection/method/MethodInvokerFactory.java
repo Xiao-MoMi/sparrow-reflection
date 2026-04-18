@@ -28,7 +28,7 @@ final class MethodInvokerFactory implements Opcodes {
 
         byte[] bytes = generateByteCode(internalClassName, owner, methodName, methodDescriptor, isStatic, parameterTypes, returnType);
 
-        MethodHandles.Lookup lookup = MethodHandles.privateLookupIn(owner, SReflection.LOOKUP);
+        MethodHandles.Lookup lookup = MethodHandles.privateLookupIn(owner, SReflection.getLookup());
         MethodHandles.Lookup hiddenLookup = lookup.defineHiddenClass(bytes, true, MethodHandles.Lookup.ClassOption.NESTMATE);
         return (SMethod) hiddenLookup.lookupClass().getDeclaredConstructor().newInstance();
     }

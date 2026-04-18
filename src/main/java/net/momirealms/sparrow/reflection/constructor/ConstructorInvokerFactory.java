@@ -21,7 +21,7 @@ final class ConstructorInvokerFactory implements Opcodes {
         Class<?>[] parameterTypes = constructor.getParameterTypes();
         String internalClassName = Type.getInternalName(owner) + "$" + SReflection.getAsmClassPrefix() + "Constructor";
         byte[] bytes = generateByteCode(internalClassName, owner, constructorDescriptor, parameterTypes);
-        MethodHandles.Lookup lookup = MethodHandles.privateLookupIn(owner, SReflection.LOOKUP);
+        MethodHandles.Lookup lookup = MethodHandles.privateLookupIn(owner, SReflection.getLookup());
         MethodHandles.Lookup hiddenLookup = lookup.defineHiddenClass(bytes, true, MethodHandles.Lookup.ClassOption.NESTMATE);
         return (SConstructor) hiddenLookup.lookupClass().getDeclaredConstructor().newInstance();
     }

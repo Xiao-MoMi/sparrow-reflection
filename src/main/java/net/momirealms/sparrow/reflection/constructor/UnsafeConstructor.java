@@ -12,7 +12,7 @@ public final class UnsafeConstructor {
 
     public Object newInstance() {
         try {
-            return SReflection.UNSAFE.allocateInstance(this.clazz);
+            return SReflection.getUnsafe().allocateInstance(this.clazz);
         } catch (InstantiationException e) {
             throw new SparrowReflectionException("Failed to create " + this.clazz.getName() + " instance with unsafe methods", e);
         }

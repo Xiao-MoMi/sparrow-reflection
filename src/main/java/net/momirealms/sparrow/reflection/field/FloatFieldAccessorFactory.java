@@ -24,7 +24,7 @@ final class FloatFieldAccessorFactory implements Opcodes {
         boolean isStatic = Modifier.isStatic(field.getModifiers());
         String internalClassName = Type.getInternalName(owner) + "$" + SReflection.getAsmClassPrefix() + "Field_" + fieldName;
         byte[] bytes = generateByteCode(internalClassName, owner, fieldName, isStatic);
-        MethodHandles.Lookup lookup = MethodHandles.privateLookupIn(owner, SReflection.LOOKUP);
+        MethodHandles.Lookup lookup = MethodHandles.privateLookupIn(owner, SReflection.getLookup());
         MethodHandles.Lookup hiddenLookup = lookup.defineHiddenClass(bytes, true, MethodHandles.Lookup.ClassOption.NESTMATE);
         return (SFloatField) hiddenLookup.lookupClass().getDeclaredConstructor().newInstance();
     }

@@ -36,7 +36,7 @@ final class OptimizedConstructorInvokerFactory implements Opcodes {
                 targetAbstractClass
         );
 
-        MethodHandles.Lookup lookup = MethodHandles.privateLookupIn(owner, SReflection.LOOKUP);
+        MethodHandles.Lookup lookup = MethodHandles.privateLookupIn(owner, SReflection.getLookup());
         MethodHandles.Lookup hiddenLookup = lookup.defineHiddenClass(bytes, true, MethodHandles.Lookup.ClassOption.NESTMATE);
         return (T) hiddenLookup.lookupClass().getDeclaredConstructor().newInstance();
     }
