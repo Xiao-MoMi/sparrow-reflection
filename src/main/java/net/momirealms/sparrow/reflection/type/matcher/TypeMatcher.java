@@ -7,27 +7,41 @@ public interface TypeMatcher {
     boolean matches(final Type type);
 
     default TypeMatcher or(final TypeMatcher matcher) {
-        return new OrMatcher(this, matcher);
+        return type -> matches(type) || matcher.matches(type);
     }
 
     default TypeMatcher and(final TypeMatcher matcher) {
-        return new AndMatcher(this, matcher);
+        return type -> matches(type) && matcher.matches(type);
     }
 
     static TypeMatcher any() {
-        return AnyMatcher.INSTANCE;
+        return type -> true;
     }
 
     static TypeMatcher anyOf(final TypeMatcher... matchers) {
-        return new AnyOfMatcher(matchers);
+        return type -> {
+            for (final TypeMatcher matcher : matchers) {
+                if (matcher.matches(type)) {
+                    return true;
+                }
+            }
+            return false;
+        };
     }
 
     static TypeMatcher allOf(final TypeMatcher... matchers) {
-        return new AllOfMatcher(matchers);
+        return type -> {
+            for (final TypeMatcher matcher : matchers) {
+                if (!matcher.matches(type)) {
+                    return false;
+                }
+            }
+            return true;
+        };
     }
 
     static TypeMatcher not(final TypeMatcher matcher) {
-        return new NotMatcher(matcher);
+        return type -> !matcher.matches(type);
     }
 
     static TypeMatcher noneOf(final TypeMatcher... matchers) {

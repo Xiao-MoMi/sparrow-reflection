@@ -3,19 +3,19 @@ package net.momirealms.sparrow.reflection.field.matcher;
 public interface FieldMatchers {
 
     static FieldMatcher fAny() {
-        return AnyMatcher.INSTANCE;
+        return FieldMatcher.any();
     }
 
     static FieldMatcher fAnyOf(final FieldMatcher... matchers) {
-        return new AnyOfMatcher(matchers);
+        return FieldMatcher.anyOf(matchers);
     }
 
     static FieldMatcher fAllOf(final FieldMatcher... matchers) {
-        return new AllOfMatcher(matchers);
+        return FieldMatcher.allOf(matchers);
     }
 
     static FieldMatcher fNot(final FieldMatcher matcher) {
-        return new NotMatcher(matcher);
+        return FieldMatcher.not(matcher);
     }
 
     static FieldMatcher fNoneOf(final FieldMatcher... matchers) {

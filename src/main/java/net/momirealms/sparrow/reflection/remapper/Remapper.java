@@ -18,8 +18,8 @@ public interface Remapper {
         return NoRemap.INSTANCE;
     }
 
-    static Remapper create(Map<String, ClassData> debof, Map<String, ClassData> obf) {
-        return new RemapperImpl(debof, obf);
+    static Remapper create(Map<String, ClassData> deobf, Map<String, ClassData> obf) {
+        return new RemapperImpl(deobf, obf);
     }
 
     static Remapper create(Path mappingsFile, String fromNamespace, String toNamespace) throws IOException {

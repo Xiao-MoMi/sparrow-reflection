@@ -9,27 +9,41 @@ public interface MethodMatcher {
     boolean matches(final Method method);
 
     default MethodMatcher or(final MethodMatcher matcher) {
-        return new OrMatcher(this, matcher);
+        return method -> matches(method) || matcher.matches(method);
     }
 
     default MethodMatcher and(final MethodMatcher matcher) {
-        return new AndMatcher(this, matcher);
+        return method -> matches(method) && matcher.matches(method);
     }
 
     static MethodMatcher any() {
-        return AnyMatcher.INSTANCE;
+        return method -> true;
     }
 
     static MethodMatcher anyOf(final MethodMatcher... matchers) {
-        return new AnyOfMatcher(matchers);
+        return method -> {
+            for (final MethodMatcher matcher : matchers) {
+                if (matcher.matches(method)) {
+                    return true;
+                }
+            }
+            return false;
+        };
     }
 
     static MethodMatcher allOf(final MethodMatcher... matchers) {
-        return new AllOfMatcher(matchers);
+        return method -> {
+            for (final MethodMatcher matcher : matchers) {
+                if (!matcher.matches(method)) {
+                    return false;
+                }
+            }
+            return true;
+        };
     }
 
     static MethodMatcher not(final MethodMatcher matcher) {
-        return new NotMatcher(matcher);
+        return method -> !matcher.matches(method);
     }
 
     static MethodMatcher noneOf(final MethodMatcher... matchers) {

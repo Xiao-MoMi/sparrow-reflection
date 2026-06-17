@@ -3,19 +3,19 @@ package net.momirealms.sparrow.reflection.type.matcher;
 public interface TypeMatchers {
 
     static TypeMatcher tAny() {
-        return AnyMatcher.INSTANCE;
+        return TypeMatcher.any();
     }
 
     static TypeMatcher tAnyOf(final TypeMatcher... matchers) {
-        return new AnyOfMatcher(matchers);
+        return TypeMatcher.anyOf(matchers);
     }
 
     static TypeMatcher tAllOf(final TypeMatcher... matchers) {
-        return new AllOfMatcher(matchers);
+        return TypeMatcher.allOf(matchers);
     }
 
     static TypeMatcher tNot(final TypeMatcher matcher) {
-        return new NotMatcher(matcher);
+        return TypeMatcher.not(matcher);
     }
 
     static TypeMatcher tNoneOf(final TypeMatcher... matchers) {

@@ -5,19 +5,19 @@ import net.momirealms.sparrow.reflection.type.matcher.TypeMatcher;
 public interface ConstructorMatchers {
 
     static ConstructorMatcher cAny() {
-        return AnyMatcher.INSTANCE;
+        return ConstructorMatcher.any();
     }
 
     static ConstructorMatcher cAnyOf(final ConstructorMatcher... matchers) {
-        return new AnyOfMatcher(matchers);
+        return ConstructorMatcher.anyOf(matchers);
     }
 
     static ConstructorMatcher cAllOf(final ConstructorMatcher... matchers) {
-        return new AllOfMatcher(matchers);
+        return ConstructorMatcher.allOf(matchers);
     }
 
     static ConstructorMatcher cNot(final ConstructorMatcher matcher) {
-        return new NotMatcher(matcher);
+        return ConstructorMatcher.not(matcher);
     }
 
     static ConstructorMatcher cNoneOf(final ConstructorMatcher... matchers) {

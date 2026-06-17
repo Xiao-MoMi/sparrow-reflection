@@ -5,19 +5,19 @@ import net.momirealms.sparrow.reflection.type.matcher.TypeMatcher;
 public interface MethodMatchers {
 
     static MethodMatcher mAny() {
-        return AnyMatcher.INSTANCE;
+        return MethodMatcher.any();
     }
 
     static MethodMatcher mAnyOf(final MethodMatcher... matchers) {
-        return new AnyOfMatcher(matchers);
+        return MethodMatcher.anyOf(matchers);
     }
 
     static MethodMatcher mAllOf(final MethodMatcher... matchers) {
-        return new AllOfMatcher(matchers);
+        return MethodMatcher.allOf(matchers);
     }
 
     static MethodMatcher mNot(final MethodMatcher matcher) {
-        return new NotMatcher(matcher);
+        return MethodMatcher.not(matcher);
     }
 
     static MethodMatcher mNoneOf(final MethodMatcher... matchers) {

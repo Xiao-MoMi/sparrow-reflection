@@ -7,27 +7,41 @@ public interface FieldMatcher {
     boolean matches(final Field field);
 
     default FieldMatcher or(final FieldMatcher matcher) {
-        return new OrMatcher(this, matcher);
+        return field -> matches(field) || matcher.matches(field);
     }
 
     default FieldMatcher and(final FieldMatcher matcher) {
-        return new AndMatcher(this, matcher);
+        return field -> matches(field) && matcher.matches(field);
     }
 
     static FieldMatcher any() {
-        return AnyMatcher.INSTANCE;
+        return field -> true;
     }
 
     static FieldMatcher anyOf(final FieldMatcher... matchers) {
-        return new AnyOfMatcher(matchers);
+        return field -> {
+            for (final FieldMatcher matcher : matchers) {
+                if (matcher.matches(field)) {
+                    return true;
+                }
+            }
+            return false;
+        };
     }
 
     static FieldMatcher allOf(final FieldMatcher... matchers) {
-        return new AllOfMatcher(matchers);
+        return field -> {
+            for (final FieldMatcher matcher : matchers) {
+                if (!matcher.matches(field)) {
+                    return false;
+                }
+            }
+            return true;
+        };
     }
 
     static FieldMatcher not(final FieldMatcher matcher) {
-        return new NotMatcher(matcher);
+        return field -> !matcher.matches(field);
     }
 
     static FieldMatcher noneOf(final FieldMatcher... matchers) {

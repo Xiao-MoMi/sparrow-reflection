@@ -9,27 +9,41 @@ public interface ConstructorMatcher {
     boolean matches(final Constructor<?> constructor);
 
     default ConstructorMatcher or(final ConstructorMatcher matcher) {
-        return new OrMatcher(this, matcher);
+        return constructor -> this.matches(constructor) || matcher.matches(constructor);
     }
 
     default ConstructorMatcher and(final ConstructorMatcher matcher) {
-        return new AndMatcher(this, matcher);
+        return constructor -> this.matches(constructor) && matcher.matches(constructor);
     }
 
     static ConstructorMatcher any() {
-        return AnyMatcher.INSTANCE;
+        return constructor -> true;
     }
 
     static ConstructorMatcher anyOf(final ConstructorMatcher... matchers) {
-        return new AnyOfMatcher(matchers);
+        return constructor -> {
+            for (final ConstructorMatcher matcher : matchers) {
+                if (matcher.matches(constructor)) {
+                    return true;
+                }
+            }
+            return false;
+        };
     }
 
     static ConstructorMatcher allOf(final ConstructorMatcher... matchers) {
-        return new AllOfMatcher(matchers);
+        return constructor -> {
+            for (final ConstructorMatcher matcher : matchers) {
+                if (!matcher.matches(constructor)) {
+                    return false;
+                }
+            }
+            return true;
+        };
     }
 
     static ConstructorMatcher not(final ConstructorMatcher matcher) {
-        return new NotMatcher(matcher);
+        return constructor -> !matcher.matches(constructor);
     }
 
     static ConstructorMatcher noneOf(final ConstructorMatcher... matchers) {
