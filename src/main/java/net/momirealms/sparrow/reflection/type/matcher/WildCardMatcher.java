@@ -15,18 +15,24 @@ final class WildCardMatcher implements TypeMatcher {
         this.lower = lower;
     }
 
+    // 通配符          上界      下界
+    // ?          ->  Object   Null
+    // ? extend T ->  T        Null
+    // ? super  T ->  Object,   T
     @Override
     public boolean matches(Type type) {
         if (!(type instanceof WildcardType wildcardType)) return false;
-        Type[] upperBounds = wildcardType.getUpperBounds();
-        if (this.upper != null && this.upper.length != 0 && upperBounds.length != 0) {
+
+        if (this.upper != null && this.upper.length != 0) {
+            Type[] upperBounds = wildcardType.getUpperBounds();
             if (upperBounds.length != this.upper.length) return false;
             for (int i = 0; i < upperBounds.length; i++) {
                 if (!this.upper[i].matches(upperBounds[i])) return false;
             }
         }
-        Type[] lowerBounds = wildcardType.getLowerBounds();
-        if (this.lower != null && this.lower.length != 0 && lowerBounds.length != 0) {
+
+        if (this.lower != null && this.lower.length != 0) {
+            Type[] lowerBounds = wildcardType.getLowerBounds();
             if (lowerBounds.length != this.lower.length) return false;
             for (int i = 0; i < lowerBounds.length; i++) {
                 if (!this.lower[i].matches(lowerBounds[i])) return false;

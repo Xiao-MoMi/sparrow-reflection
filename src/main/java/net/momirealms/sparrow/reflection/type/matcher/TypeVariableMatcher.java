@@ -28,6 +28,6 @@ final class TypeVariableMatcher implements TypeMatcher {
                 if (!this.bounds[i].matches(bounds[i])) return false;
             }
         }
-        return false;
+        return true;
     }
 }
