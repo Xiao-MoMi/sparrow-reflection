@@ -201,12 +201,7 @@ final class Util implements Opcodes {
         } else {
             throw new IllegalArgumentException("FieldGetter doesn't have name or names set");
         }
-        if (fieldGetter.isStatic()) {
-            matcher.and(FieldMatcher.staticField());
-        } else {
-            matcher.and(FieldMatcher.instanceField());
-        }
-        return matcher;
+        return fieldGetter.isStatic() ? matcher.and(FieldMatcher.staticField()) : matcher.and(FieldMatcher.instanceField());
     }
 
     @SuppressWarnings("DuplicatedCode")
@@ -217,12 +212,7 @@ final class Util implements Opcodes {
         } else {
             throw new IllegalArgumentException("FieldSetter doesn't have name or names set");
         }
-        if (fieldSetter.isStatic()) {
-            matcher.and(FieldMatcher.staticField());
-        } else {
-            matcher.and(FieldMatcher.instanceField());
-        }
-        return matcher;
+        return fieldSetter.isStatic() ? matcher.and(FieldMatcher.staticField()) : matcher.and(FieldMatcher.instanceField());
     }
 
     public static MethodMatcher createMethodMatcher(MethodInvoker invoker) {
@@ -232,12 +222,7 @@ final class Util implements Opcodes {
         } else {
             throw new IllegalArgumentException("MethodInvoker doesn't have name or names set");
         }
-        if (invoker.isStatic()) {
-            matcher.and(MethodMatcher.staticMethod());
-        } else {
-            matcher.and(MethodMatcher.instanceMethod());
-        }
-        return matcher;
+        return invoker.isStatic() ? matcher.and(MethodMatcher.staticMethod()) : matcher.and(MethodMatcher.instanceMethod());
     }
 
     public static void analyseAndApply(ProxyBuilder builder, List<Class<?>> interfaces) {
@@ -274,7 +259,7 @@ final class Util implements Opcodes {
             FieldSetter fieldSetter = method.getAnnotation(FieldSetter.class);
             if (fieldSetter != null && SReflection.getFilter().test(fieldSetter.activeIf())) {
                 Field field = spaClass.getDeclaredField(Util.getFieldMatcher(fieldSetter));
-                if (fieldSetter.optional()) {
+                if (!fieldSetter.optional()) {
                     Objects.requireNonNull(field, "Field not found for proxy " + proxyClass + "#" + method.getName());
                 }
                 if (field != null) {
