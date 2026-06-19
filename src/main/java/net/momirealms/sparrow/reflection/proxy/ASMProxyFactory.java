@@ -5,6 +5,6 @@ public final class ASMProxyFactory {
     }
 
     public static <T> T create(final Class<T> proxy) {
-        return Util.createAsmProxy(proxy);
+        return ProxyGenerator.create(proxy);
     }
 }
